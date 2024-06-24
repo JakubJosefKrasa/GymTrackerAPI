@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: GymTrackerAPI
+  profiles:
+    active: dev
