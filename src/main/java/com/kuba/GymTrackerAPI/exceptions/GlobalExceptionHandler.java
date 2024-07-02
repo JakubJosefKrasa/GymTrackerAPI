@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -59,5 +60,12 @@ public class GlobalExceptionHandler {
         ErrorObject error = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage(), new Date());
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorObject> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        ErrorObject error = new ErrorObject(HttpStatus.BAD_REQUEST.value(), "Chyba typu v URL adrese, prosím zkontrolujte URL adresu!", new Date());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }
