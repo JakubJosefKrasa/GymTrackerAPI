@@ -1,8 +1,12 @@
 package com.kuba.GymTrackerAPI.exercise;
 
+import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlan;
 import com.kuba.GymTrackerAPI.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,4 +22,6 @@ public class Exercise {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+    @ManyToMany(mappedBy = "exercises")
+    private Set<TrainingPlan> trainingPlans = new HashSet<>();
 }

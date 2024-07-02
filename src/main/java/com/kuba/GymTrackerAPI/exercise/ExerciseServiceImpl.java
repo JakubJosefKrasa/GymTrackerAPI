@@ -60,6 +60,8 @@ public class ExerciseServiceImpl implements ExerciseService {
         User user = (User) authenticatedUser.getPrincipal();
 
         Exercise exercise = exerciseRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
+        exercise.getTrainingPlans().forEach(trainingPlan -> trainingPlan.getExercises().remove(exercise));
+
         exerciseRepository.delete(exercise);
     }
 
