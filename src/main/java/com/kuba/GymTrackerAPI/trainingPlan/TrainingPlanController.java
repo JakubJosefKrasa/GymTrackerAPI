@@ -43,7 +43,7 @@ public class TrainingPlanController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TrainingPlanDTO> changeTrainingPlanName(@PathVariable Long id, TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
+    public ResponseEntity<TrainingPlanDTO> changeTrainingPlanName(@PathVariable Long id, @Valid @RequestBody TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
         TrainingPlanDTO trainingPlan = trainingPlanService.changeTrainingPlanName(id, trainingPlanRequest, authenticatedUser);
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.OK);
