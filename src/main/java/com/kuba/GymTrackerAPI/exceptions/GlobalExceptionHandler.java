@@ -3,6 +3,7 @@ package com.kuba.GymTrackerAPI.exceptions;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -65,6 +66,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorObject> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         ErrorObject error = new ErrorObject(HttpStatus.BAD_REQUEST.value(), "Chyba typu v URL adrese, prosím zkontrolujte URL adresu!", new Date());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorObject> handleMethodArgumentTypeMismatchException(HttpMessageNotReadableException ex) {
+        ErrorObject error = new ErrorObject(HttpStatus.BAD_REQUEST.value(), "Nesprávný datový typ!", new Date());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
