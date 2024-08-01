@@ -9,15 +9,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class TrainingPlanDTOMapper implements Function<TrainingPlan, TrainingPlanDTO> {
+public class TrainingPlanExercisesDTOMapper implements Function<TrainingPlan, TrainingPlanExercisesDTO> {
     private final ExerciseDTOMapper exerciseDTOMapper;
 
     @Override
-    public TrainingPlanDTO apply(TrainingPlan trainingPlan) {
-        return new TrainingPlanDTO(
+    public TrainingPlanExercisesDTO apply(TrainingPlan trainingPlan) {
+        return new TrainingPlanExercisesDTO(
                 trainingPlan.getId(),
                 trainingPlan.getTrainingPlanName(),
-                trainingPlan.getUser().getId(),
                 trainingPlan.getExercises()
                         .stream()
                         .map(exerciseDTOMapper)

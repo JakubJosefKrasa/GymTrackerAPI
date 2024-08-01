@@ -6,6 +6,7 @@ import com.kuba.GymTrackerAPI.exercise.Exercise;
 import com.kuba.GymTrackerAPI.exercise.ExerciseRepository;
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
 import com.kuba.GymTrackerAPI.user.User;
+import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExercise;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -21,10 +23,10 @@ import java.util.List;
 public class TrainingPlanServiceImpl implements TrainingPlanService {
     private final TrainingPlanRepository trainingPlanRepository;
     private final ExerciseRepository exerciseRepository;
-    private final TrainingPlanDTOMapper trainingPlanDTOMapper;
+    private final TrainingPlanExercisesDTOMapper trainingPlanExercisesDTOMapper;
 
     @Override
-    public PaginationDTO<TrainingPlanDTO> getTrainingPlansByUser(int pageNumber, int pageSize, Authentication authenticatedUser) {
+    public PaginationDTO<TrainingPlanExercisesDTO> getTrainingPlansByUser(int pageNumber, int pageSize, Authentication authenticatedUser) {
         User user = (User) authenticatedUser.getPrincipal();
 
         Pageable page;
@@ -36,10 +38,10 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         Page<TrainingPlan> trainingPlanPage = trainingPlanRepository.findByUser(page, user);
 
-        List<TrainingPlanDTO> trainingPlans = trainingPlanPage
+        List<TrainingPlanExercisesDTO> trainingPlans = trainingPlanPage
                 .getContent()
                 .stream()
-                .map(trainingPlanDTOMapper)
+                .map(trainingPlanExercisesDTOMapper)
                 .toList();
 
         return new PaginationDTO<>(
@@ -51,16 +53,16 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
-    public TrainingPlanDTO getTrainingPlanById(Long id, Authentication authenticatedUser) {
+    public TrainingPlanExercisesDTO getTrainingPlanById(Long id, Authentication authenticatedUser) {
         User user = (User) authenticatedUser.getPrincipal();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
 
-        return trainingPlanDTOMapper.apply(trainingPlan);
+        return trainingPlanExercisesDTOMapper.apply(trainingPlan);
     }
 
     @Override
-    public TrainingPlanDTO createTrainingPlan(TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
+    public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
         User user = (User) authenticatedUser.getPrincipal();
 
         TrainingPlan trainingPlanToBeSaved = TrainingPlan.builder()
@@ -71,7 +73,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlanToBeSaved);
 
-        return trainingPlanDTOMapper.apply(savedTrainingPlan);
+        return trainingPlanExercisesDTOMapper.apply(savedTrainingPlan);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
-    public TrainingPlanDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
+    public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
         User user = (User) authenticatedUser.getPrincipal();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
@@ -91,11 +93,11 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         TrainingPlan updatedTrainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        return trainingPlanDTOMapper.apply(updatedTrainingPlan);
+        return trainingPlanExercisesDTOMapper.apply(updatedTrainingPlan);
     }
 
     @Override
-    public TrainingPlanDTO addExerciseInTrainingPlan(Long trainingPlanId, Long exerciseId, Authentication authenticatedUser) {
+    public TrainingPlanExercisesDTO addExerciseInTrainingPlan(Long trainingPlanId, Long exerciseId, Authentication authenticatedUser) {
         User user = (User) authenticatedUser.getPrincipal();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(trainingPlanId, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
@@ -105,9 +107,20 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         trainingPlan.getExercises().add(exercise);
 
+
+        trainingPlan.getWorkoutSessions().forEach(workoutSession -> {
+            WorkoutSessionExercise workoutSessionExercise = WorkoutSessionExercise.builder()
+                            .workoutSession(workoutSession)
+                            .exercise(exercise)
+                            .workoutSessionExerciseSets(new ArrayList<>())
+                            .build();
+
+            workoutSession.getWorkoutSessionExercises().add(workoutSessionExercise);
+        });
+
         TrainingPlan updatedTrainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        return trainingPlanDTOMapper.apply(updatedTrainingPlan);
+        return trainingPlanExercisesDTOMapper.apply(updatedTrainingPlan);
     }
 
     @Override

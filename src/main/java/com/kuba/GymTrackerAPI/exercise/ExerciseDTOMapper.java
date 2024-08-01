@@ -10,8 +10,7 @@ public class ExerciseDTOMapper implements Function<Exercise, ExerciseDTO> {
     public ExerciseDTO apply(Exercise exercise) {
         return new ExerciseDTO(
                 exercise.getId(),
-                exercise.getExerciseName(),
-                exercise.getUser().getId()
+                exercise.getExerciseName()
         );
     }
 }
