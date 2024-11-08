@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/exercises")
@@ -20,6 +22,13 @@ public class ExerciseController {
         PaginationDTO<ExerciseDTO> exercisesByUser = exerciseService.getExercisesByUser(pageNumber, pageSize, authenticatedUser);
 
         return new ResponseEntity<>(exercisesByUser, HttpStatus.OK);
+    }
+
+    @GetMapping("/not-in-training-plan/{trainingPlanId}")
+    public ResponseEntity<List<ExerciseDTO>> getExercisesNotInTrainingPlan(@PathVariable Long trainingPlanId, Authentication authenticatedUser) {
+        List<ExerciseDTO> exercises = exerciseService.getExercisesNotInTrainingPlan(trainingPlanId, authenticatedUser);
+
+        return new ResponseEntity<>(exercises, HttpStatus.OK);
     }
 
     @PostMapping

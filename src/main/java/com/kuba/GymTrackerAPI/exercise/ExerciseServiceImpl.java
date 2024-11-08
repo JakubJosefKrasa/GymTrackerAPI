@@ -2,6 +2,8 @@ package com.kuba.GymTrackerAPI.exercise;
 
 import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
+import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlan;
+import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlanRepository;
 import com.kuba.GymTrackerAPI.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExerciseServiceImpl implements ExerciseService {
     private final ExerciseRepository exerciseRepository;
+    private final TrainingPlanRepository trainingPlanRepository;
     private final ExerciseDTOMapper exerciseDTOMapper;
 
     @Override
@@ -44,6 +47,23 @@ public class ExerciseServiceImpl implements ExerciseService {
                 exercisePage.hasPrevious(),
                 exercisePage.hasNext()
         );
+    }
+
+    @Override
+    public List<ExerciseDTO> getExercisesNotInTrainingPlan(Long trainingPlanId, Authentication authenticatedUser) {
+        User user = (User) authenticatedUser.getPrincipal();
+
+        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(trainingPlanId, user)
+                .orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
+
+        Page<Exercise> exercises = exerciseRepository.findByUser(Pageable.unpaged(), user);
+
+        return exercises.stream()
+                .filter(
+                        exercise -> !trainingPlan.getExercises().contains(exercise)
+                )
+                .map(exerciseDTOMapper)
+                .toList();
     }
 
     @Override
