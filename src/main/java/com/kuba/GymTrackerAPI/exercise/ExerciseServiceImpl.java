@@ -71,9 +71,9 @@ public class ExerciseServiceImpl implements ExerciseService {
         User user = (User) authenticatedUser.getPrincipal();
 
         Exercise exerciseToBeSaved = Exercise.builder().exerciseName(exerciseRequest.exerciseName()).user(user).build();
-        Exercise savedExercise = exerciseRepository.save(exerciseToBeSaved);
+        exerciseToBeSaved = exerciseRepository.save(exerciseToBeSaved);
 
-        return exerciseDTOMapper.apply(savedExercise);
+        return exerciseDTOMapper.apply(exerciseToBeSaved);
     }
 
     @Override
@@ -93,9 +93,8 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         Exercise exercise = exerciseRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
         exercise.setExerciseName(exerciseRequest.exerciseName());
+        exercise = exerciseRepository.save(exercise);
 
-        Exercise updatedExercise = exerciseRepository.save(exercise);
-
-        return exerciseDTOMapper.apply(updatedExercise);
+        return exerciseDTOMapper.apply(exercise);
     }
 }

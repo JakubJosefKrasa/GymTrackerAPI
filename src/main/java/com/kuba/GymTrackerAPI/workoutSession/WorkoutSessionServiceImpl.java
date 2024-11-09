@@ -111,7 +111,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
                 .build();
 
         workoutSessionExercises.get(0).getWorkoutSessionExerciseSets().add(workoutExerciseSet);
-        workoutSessionRepository.save(workoutSession);
+        workoutSession = workoutSessionRepository.save(workoutSession);
 
 
         return workoutSessionDTOMapper.apply(workoutSession);

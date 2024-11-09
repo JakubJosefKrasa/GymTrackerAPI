@@ -71,9 +71,9 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
                 .exercises(new HashSet<>())
                 .build();
 
-        TrainingPlan savedTrainingPlan = trainingPlanRepository.save(trainingPlanToBeSaved);
+        trainingPlanToBeSaved = trainingPlanRepository.save(trainingPlanToBeSaved);
 
-        return trainingPlanExercisesDTOMapper.apply(savedTrainingPlan);
+        return trainingPlanExercisesDTOMapper.apply(trainingPlanToBeSaved);
     }
 
     @Override
@@ -90,10 +90,9 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
         trainingPlan.setTrainingPlanName(trainingPlanRequest.trainingPlanName());
+        trainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        TrainingPlan updatedTrainingPlan = trainingPlanRepository.save(trainingPlan);
-
-        return trainingPlanExercisesDTOMapper.apply(updatedTrainingPlan);
+        return trainingPlanExercisesDTOMapper.apply(trainingPlan);
     }
 
     @Override
@@ -118,9 +117,9 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
             workoutSession.getWorkoutSessionExercises().add(workoutSessionExercise);
         });
 
-        TrainingPlan updatedTrainingPlan = trainingPlanRepository.save(trainingPlan);
+        trainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        return trainingPlanExercisesDTOMapper.apply(updatedTrainingPlan);
+        return trainingPlanExercisesDTOMapper.apply(trainingPlan);
     }
 
     @Override
