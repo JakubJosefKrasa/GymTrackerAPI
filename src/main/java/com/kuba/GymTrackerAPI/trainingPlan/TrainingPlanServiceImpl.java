@@ -3,7 +3,7 @@ package com.kuba.GymTrackerAPI.trainingPlan;
 import com.kuba.GymTrackerAPI.exceptions.BadRequestException;
 import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
 import com.kuba.GymTrackerAPI.exercise.Exercise;
-import com.kuba.GymTrackerAPI.exercise.ExerciseRepository;
+import com.kuba.GymTrackerAPI.exercise.ExerciseService;
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
 import com.kuba.GymTrackerAPI.security.UserContext;
 import com.kuba.GymTrackerAPI.user.User;
@@ -24,8 +24,12 @@ import java.util.List;
 public class TrainingPlanServiceImpl implements TrainingPlanService {
     private final UserContext userContext;
     private final TrainingPlanRepository trainingPlanRepository;
-    private final ExerciseRepository exerciseRepository;
+    private final ExerciseService exerciseService;
     private final TrainingPlanExercisesDTOMapper trainingPlanExercisesDTOMapper;
+
+    public TrainingPlan getTrainingPlanEntityById(Long id, User user) {
+        return trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
+    }
 
     @Override
     public PaginationDTO<TrainingPlanExercisesDTO> getTrainingPlansByUser(int pageNumber, int pageSize) {
@@ -58,7 +62,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     public TrainingPlanExercisesDTO getTrainingPlanById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
+        TrainingPlan trainingPlan = getTrainingPlanEntityById(id, user);
 
         return trainingPlanExercisesDTOMapper.apply(trainingPlan);
     }
@@ -84,7 +88,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     public void deleteTrainingPlanById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
+        TrainingPlan trainingPlan = getTrainingPlanEntityById(id, user);
         trainingPlanRepository.delete(trainingPlan);
     }
 
@@ -93,7 +97,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
+        TrainingPlan trainingPlan = getTrainingPlanEntityById(id, user);
         trainingPlan.setTrainingPlanName(trainingPlanRequest.trainingPlanName());
         trainingPlan = trainingPlanRepository.save(trainingPlan);
 
@@ -105,8 +109,8 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     public TrainingPlanExercisesDTO addExerciseInTrainingPlan(Long trainingPlanId, Long exerciseId) {
         User user = userContext.getAuthenticatedUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(trainingPlanId, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
-        Exercise exercise = exerciseRepository.findByIdAndUser(exerciseId, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
+        TrainingPlan trainingPlan = getTrainingPlanEntityById(trainingPlanId, user);
+        Exercise exercise = exerciseService.getExerciseEntityById(exerciseId, user);
 
         if (trainingPlan.getExercises().contains(exercise)) throw new BadRequestException("Cvik může být pouze jednou v tréninkovém plánu!");
 
@@ -133,8 +137,8 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     public void removeExerciseFromTrainingPlan(Long trainingPlanId, Long exerciseId) {
         User user = userContext.getAuthenticatedUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(trainingPlanId, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
-        Exercise exercise = exerciseRepository.findByIdAndUser(exerciseId, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
+        TrainingPlan trainingPlan = getTrainingPlanEntityById(trainingPlanId, user);
+        Exercise exercise = exerciseService.getExerciseEntityById(exerciseId, user);
 
         trainingPlan.getExercises().remove(exercise);
 

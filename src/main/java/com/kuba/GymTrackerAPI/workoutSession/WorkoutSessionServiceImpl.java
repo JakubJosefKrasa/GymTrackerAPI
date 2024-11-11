@@ -4,13 +4,13 @@ import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
 import com.kuba.GymTrackerAPI.exercise.Exercise;
 import com.kuba.GymTrackerAPI.security.UserContext;
 import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlan;
-import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlanRepository;
+import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlanService;
 import com.kuba.GymTrackerAPI.user.User;
 import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExercise;
-import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExerciseRepository;
+import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExerciseService;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSet;
-import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRepository;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequest;
+import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,11 +25,15 @@ import java.util.List;
 public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     private final UserContext userContext;
     private final WorkoutSessionRepository workoutSessionRepository;
-    private final TrainingPlanRepository trainingPlanRepository;
-    private final WorkoutSessionExerciseRepository workoutSessionExerciseRepository;
-    private final WorkoutSessionExerciseSetRepository workoutSessionExerciseSetRepository;
+    private final TrainingPlanService trainingPlanService;
+    private final WorkoutSessionExerciseService workoutSessionExerciseService;
+    private final WorkoutSessionExerciseSetService workoutSessionExerciseSetService;
 
     private final WorkoutSessionDTOMapper workoutSessionDTOMapper;
+
+    public WorkoutSession getWorkoutSessionEntityById(Long workoutSessionId, User user) {
+        return workoutSessionRepository.findByIdAndUser(workoutSessionId, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
+    }
 
     @Override
     public List<WorkoutSessionDTO> getWorkoutSessionsByUser() {
@@ -47,7 +51,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     public WorkoutSessionDTO getWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
-        WorkoutSession workoutSession = workoutSessionRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
+        WorkoutSession workoutSession = getWorkoutSessionEntityById(id, user);
 
         return workoutSessionDTOMapper.apply(workoutSession);
     }
@@ -57,7 +61,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     public WorkoutSessionDTO createWorkoutSession(WorkoutSessionRequest workoutSessionRequest) {
         User user = userContext.getAuthenticatedUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(workoutSessionRequest.trainingPlanId(), user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
+        TrainingPlan trainingPlan = trainingPlanService.getTrainingPlanEntityById(workoutSessionRequest.trainingPlanId(), user);
 
         WorkoutSession workoutSession = WorkoutSession.builder()
                 .date(workoutSessionRequest.date())
@@ -87,7 +91,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     public void deleteWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
-        workoutSessionRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
+        getWorkoutSessionEntityById(id, user);
 
         workoutSessionRepository.deleteById(id);
     }
@@ -101,9 +105,10 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     ) {
         User user = userContext.getAuthenticatedUser();
 
-        WorkoutSession workoutSession = workoutSessionRepository.findByIdAndUser(workoutSessionId, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
+        WorkoutSession workoutSession = getWorkoutSessionEntityById(workoutSessionId, user);
 
         List<WorkoutSessionExercise> workoutSessionExercises = workoutSession.getWorkoutSessionExercises().stream().filter(wse -> wse.getId().equals(workoutSessionExerciseId)).toList();
+
         if (workoutSessionExercises.isEmpty()) throw new NotFoundException("Cvik v tréninku nenalezen!");
 
         WorkoutSessionExerciseSet workoutExerciseSet = WorkoutSessionExerciseSet.builder()
@@ -124,11 +129,11 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     public void deleteExerciseSetById(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId) {
         User user = userContext.getAuthenticatedUser();
 
-        WorkoutSession workoutSession = workoutSessionRepository.findByIdAndUser(workoutSessionId, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
-        workoutSessionExerciseRepository.findByIdAndWorkoutSession(workoutSessionExerciseId, workoutSession).orElseThrow(() -> new NotFoundException("Cvik v tréninku nenalezen!"));
-        workoutSessionExerciseSetRepository.findById(workoutSessionExerciseSetId).orElseThrow(() -> new NotFoundException("Série nenalezena"));
+        WorkoutSession workoutSession = getWorkoutSessionEntityById(workoutSessionId, user);
+        workoutSessionExerciseService.getWorkoutSessionExerciseEntityByIdAndWorkoutSession(workoutSessionExerciseId, workoutSession);
+        workoutSessionExerciseSetService.getWorkoutSessionExerciseSetEntityById(workoutSessionExerciseSetId);
 
-        workoutSessionExerciseSetRepository.deleteById(workoutSessionExerciseSetId);
+        workoutSessionExerciseSetService.deleteWorkoutSessionExerciseSetById(workoutSessionExerciseSetId);
     }
 
     @Override
@@ -136,14 +141,14 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     public WorkoutSessionDTO editExerciseSet(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId, WorkoutSessionExerciseSetRequest workoutSessionExerciseSetRequest) {
         User user = userContext.getAuthenticatedUser();
 
-        WorkoutSession workoutSession = workoutSessionRepository.findByIdAndUser(workoutSessionId, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
-        workoutSessionExerciseRepository.findByIdAndWorkoutSession(workoutSessionExerciseId, workoutSession).orElseThrow(() -> new NotFoundException("Cvik v tréninku nenalezen!"));
-        WorkoutSessionExerciseSet exerciseSet = workoutSessionExerciseSetRepository.findById(workoutSessionExerciseSetId).orElseThrow(() -> new NotFoundException("Série nenalezena"));
+        WorkoutSession workoutSession = getWorkoutSessionEntityById(workoutSessionId, user);
+        workoutSessionExerciseService.getWorkoutSessionExerciseEntityByIdAndWorkoutSession(workoutSessionExerciseId, workoutSession);
+        WorkoutSessionExerciseSet exerciseSet = workoutSessionExerciseSetService.getWorkoutSessionExerciseSetEntityById(workoutSessionExerciseSetId);
 
         exerciseSet.setRepetitions(workoutSessionExerciseSetRequest.repetitions());
         exerciseSet.setWeight(workoutSessionExerciseSetRequest.weight());
 
-        workoutSessionExerciseSetRepository.save(exerciseSet);
+        workoutSessionExerciseSetService.saveWorkoutSessionExerciseSet(exerciseSet);
 
         return workoutSessionDTOMapper.apply(workoutSession);
     }

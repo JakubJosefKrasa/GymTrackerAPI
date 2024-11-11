@@ -4,9 +4,9 @@ import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
 import com.kuba.GymTrackerAPI.security.UserContext;
 import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlan;
-import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlanRepository;
+import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlanService;
 import com.kuba.GymTrackerAPI.user.User;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +16,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ExerciseServiceImpl implements ExerciseService {
     private final UserContext userContext;
     private final ExerciseRepository exerciseRepository;
-    private final TrainingPlanRepository trainingPlanRepository;
+    private final TrainingPlanService trainingPlanService;
     private final ExerciseDTOMapper exerciseDTOMapper;
+
+    public ExerciseServiceImpl(UserContext userContext, ExerciseRepository exerciseRepository, @Lazy TrainingPlanService trainingPlanService, ExerciseDTOMapper exerciseDTOMapper) {
+        this.userContext = userContext;
+        this.exerciseRepository = exerciseRepository;
+        this.trainingPlanService = trainingPlanService;
+        this.exerciseDTOMapper = exerciseDTOMapper;
+    }
+
+    public Exercise getExerciseEntityById(Long id, User user) {
+        return exerciseRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
+    }
 
     @Override
     public PaginationDTO<ExerciseDTO> getExercisesByUser(int pageNumber, int pageSize) {
@@ -54,17 +64,11 @@ public class ExerciseServiceImpl implements ExerciseService {
     public List<ExerciseDTO> getExercisesNotInTrainingPlan(Long trainingPlanId) {
         User user = userContext.getAuthenticatedUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(trainingPlanId, user)
-                .orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
+        TrainingPlan trainingPlan = trainingPlanService.getTrainingPlanEntityById(trainingPlanId, user);
 
-        Page<Exercise> exercises = exerciseRepository.findByUser(Pageable.unpaged(), user);
+        List<Exercise> exercises = exerciseRepository.findByUserAndTrainingPlansNotContaining(user, trainingPlan);
 
-        return exercises.stream()
-                .filter(
-                        exercise -> !trainingPlan.getExercises().contains(exercise)
-                )
-                .map(exerciseDTOMapper)
-                .toList();
+        return exercises.stream().map(exerciseDTOMapper).toList();
     }
 
     @Override
@@ -83,7 +87,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     public void deleteExerciseById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
-        Exercise exercise = exerciseRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
+        Exercise exercise = getExerciseEntityById(id, user);
         exercise.getTrainingPlans().forEach(trainingPlan -> trainingPlan.getExercises().remove(exercise));
 
         exerciseRepository.delete(exercise);
@@ -94,7 +98,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     public ExerciseDTO changeExerciseName(Long id, ExerciseRequest exerciseRequest) {
         User user = userContext.getAuthenticatedUser();
 
-        Exercise exercise = exerciseRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
+        Exercise exercise = getExerciseEntityById(id, user);
         exercise.setExerciseName(exerciseRequest.exerciseName());
         exercise = exerciseRepository.save(exercise);
 
