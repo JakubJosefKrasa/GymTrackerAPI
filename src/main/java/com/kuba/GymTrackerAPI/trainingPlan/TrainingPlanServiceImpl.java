@@ -5,13 +5,13 @@ import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
 import com.kuba.GymTrackerAPI.exercise.Exercise;
 import com.kuba.GymTrackerAPI.exercise.ExerciseRepository;
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
+import com.kuba.GymTrackerAPI.security.UserContext;
 import com.kuba.GymTrackerAPI.user.User;
 import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExercise;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,13 +21,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TrainingPlanServiceImpl implements TrainingPlanService {
+    private final UserContext userContext;
     private final TrainingPlanRepository trainingPlanRepository;
     private final ExerciseRepository exerciseRepository;
     private final TrainingPlanExercisesDTOMapper trainingPlanExercisesDTOMapper;
 
     @Override
-    public PaginationDTO<TrainingPlanExercisesDTO> getTrainingPlansByUser(int pageNumber, int pageSize, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
+    public PaginationDTO<TrainingPlanExercisesDTO> getTrainingPlansByUser(int pageNumber, int pageSize) {
+        User user = userContext.getAuthenticatedUser();
 
         Pageable page;
         if (pageNumber >= 0) {
@@ -53,8 +54,8 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
-    public TrainingPlanExercisesDTO getTrainingPlanById(Long id, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
+    public TrainingPlanExercisesDTO getTrainingPlanById(Long id) {
+        User user = userContext.getAuthenticatedUser();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
 
@@ -62,8 +63,8 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
-    public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
+    public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequest trainingPlanRequest) {
+        User user = userContext.getAuthenticatedUser();
 
         TrainingPlan trainingPlanToBeSaved = TrainingPlan.builder()
                 .trainingPlanName(trainingPlanRequest.trainingPlanName())
@@ -77,16 +78,16 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
-    public void deleteTrainingPlanById(Long id, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
+    public void deleteTrainingPlanById(Long id) {
+        User user = userContext.getAuthenticatedUser();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
         trainingPlanRepository.delete(trainingPlan);
     }
 
     @Override
-    public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
+    public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest) {
+        User user = userContext.getAuthenticatedUser();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
         trainingPlan.setTrainingPlanName(trainingPlanRequest.trainingPlanName());
@@ -96,8 +97,8 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
-    public TrainingPlanExercisesDTO addExerciseInTrainingPlan(Long trainingPlanId, Long exerciseId, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
+    public TrainingPlanExercisesDTO addExerciseInTrainingPlan(Long trainingPlanId, Long exerciseId) {
+        User user = userContext.getAuthenticatedUser();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(trainingPlanId, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
         Exercise exercise = exerciseRepository.findByIdAndUser(exerciseId, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
@@ -123,8 +124,8 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
-    public void removeExerciseFromTrainingPlan(Long trainingPlanId, Long exerciseId, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
+    public void removeExerciseFromTrainingPlan(Long trainingPlanId, Long exerciseId) {
+        User user = userContext.getAuthenticatedUser();
 
         TrainingPlan trainingPlan = trainingPlanRepository.findByIdAndUser(trainingPlanId, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
         Exercise exercise = exerciseRepository.findByIdAndUser(exerciseId, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
