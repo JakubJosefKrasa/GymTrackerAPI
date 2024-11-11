@@ -6,12 +6,12 @@ import com.kuba.GymTrackerAPI.security.UserContext;
 import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlan;
 import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlanRepository;
 import com.kuba.GymTrackerAPI.user.User;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -68,6 +68,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    @Transactional
     public ExerciseDTO createExercise(ExerciseRequest exerciseRequest) {
         User user = userContext.getAuthenticatedUser();
 
@@ -89,6 +90,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    @Transactional
     public ExerciseDTO changeExerciseName(Long id, ExerciseRequest exerciseRequest) {
         User user = userContext.getAuthenticatedUser();
 

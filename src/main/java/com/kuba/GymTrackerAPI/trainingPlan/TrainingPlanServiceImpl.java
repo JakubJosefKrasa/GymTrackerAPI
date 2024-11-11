@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,6 +64,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
+    @Transactional
     public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequest trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
 
@@ -78,6 +80,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
+    @Transactional
     public void deleteTrainingPlanById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
@@ -86,6 +89,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
+    @Transactional
     public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
 
@@ -97,6 +101,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
+    @Transactional
     public TrainingPlanExercisesDTO addExerciseInTrainingPlan(Long trainingPlanId, Long exerciseId) {
         User user = userContext.getAuthenticatedUser();
 
@@ -124,6 +129,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     }
 
     @Override
+    @Transactional
     public void removeExerciseFromTrainingPlan(Long trainingPlanId, Long exerciseId) {
         User user = userContext.getAuthenticatedUser();
 

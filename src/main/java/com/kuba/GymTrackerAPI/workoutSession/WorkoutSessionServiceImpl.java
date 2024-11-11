@@ -11,10 +11,10 @@ import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExerciseRepos
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSet;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRepository;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +83,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     }
 
     @Override
+    @Transactional
     public void deleteWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
@@ -92,6 +93,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     }
 
     @Override
+    @Transactional
     public WorkoutSessionDTO createExerciseSet(
             Long workoutSessionId,
             Long workoutSessionExerciseId,
@@ -118,6 +120,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     }
 
     @Override
+    @Transactional
     public void deleteExerciseSetById(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId) {
         User user = userContext.getAuthenticatedUser();
 
@@ -129,6 +132,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     }
 
     @Override
+    @Transactional
     public WorkoutSessionDTO editExerciseSet(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId, WorkoutSessionExerciseSetRequest workoutSessionExerciseSetRequest) {
         User user = userContext.getAuthenticatedUser();
 
