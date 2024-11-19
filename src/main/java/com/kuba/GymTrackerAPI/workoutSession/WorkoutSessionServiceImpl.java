@@ -28,8 +28,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     private final TrainingPlanService trainingPlanService;
     private final WorkoutSessionExerciseService workoutSessionExerciseService;
     private final WorkoutSessionExerciseSetService workoutSessionExerciseSetService;
-
-    private final WorkoutSessionDTOMapper workoutSessionDTOMapper;
+    private final WorkoutSessionMapper workoutSessionMapper;
 
     public WorkoutSession getWorkoutSessionEntityById(Long workoutSessionId, User user) {
         return workoutSessionRepository.findByIdAndUser(workoutSessionId, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
@@ -43,7 +42,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
 
         return workoutSessions
                 .stream()
-                .map(workoutSessionDTOMapper)
+                .map(workoutSessionMapper::toWorkoutSessionDTO)
                 .toList();
     }
 
@@ -53,7 +52,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
 
         WorkoutSession workoutSession = getWorkoutSessionEntityById(id, user);
 
-        return workoutSessionDTOMapper.apply(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
     }
 
     @Override
@@ -83,7 +82,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
 
         workoutSession = workoutSessionRepository.save(workoutSession);
 
-        return workoutSessionDTOMapper.apply(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
     }
 
     @Override
@@ -121,7 +120,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
         workoutSession = workoutSessionRepository.save(workoutSession);
 
 
-        return workoutSessionDTOMapper.apply(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
     }
 
     @Override
@@ -150,6 +149,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
 
         workoutSessionExerciseSetService.saveWorkoutSessionExerciseSet(exerciseSet);
 
-        return workoutSessionDTOMapper.apply(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
     }
 }

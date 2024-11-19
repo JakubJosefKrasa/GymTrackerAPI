@@ -25,7 +25,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
     private final UserContext userContext;
     private final TrainingPlanRepository trainingPlanRepository;
     private final ExerciseService exerciseService;
-    private final TrainingPlanExercisesDTOMapper trainingPlanExercisesDTOMapper;
+    private final TrainingPlanMapper trainingPlanMapper;
 
     public TrainingPlan getTrainingPlanEntityById(Long id, User user) {
         return trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
@@ -47,7 +47,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         List<TrainingPlanExercisesDTO> trainingPlans = trainingPlanPage
                 .getContent()
                 .stream()
-                .map(trainingPlanExercisesDTOMapper)
+                .map(trainingPlanMapper::toTrainingPlanExercisesDTO)
                 .toList();
 
         return new PaginationDTO<>(
@@ -64,7 +64,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         TrainingPlan trainingPlan = getTrainingPlanEntityById(id, user);
 
-        return trainingPlanExercisesDTOMapper.apply(trainingPlan);
+        return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         trainingPlanToBeSaved = trainingPlanRepository.save(trainingPlanToBeSaved);
 
-        return trainingPlanExercisesDTOMapper.apply(trainingPlanToBeSaved);
+        return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlanToBeSaved);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         trainingPlan.setTrainingPlanName(trainingPlanRequest.trainingPlanName());
         trainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        return trainingPlanExercisesDTOMapper.apply(trainingPlan);
+        return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
 
         trainingPlan = trainingPlanRepository.save(trainingPlan);
 
-        return trainingPlanExercisesDTOMapper.apply(trainingPlan);
+        return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
     }
 
     @Override

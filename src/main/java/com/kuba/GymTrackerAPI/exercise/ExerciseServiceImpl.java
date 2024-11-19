@@ -20,13 +20,13 @@ public class ExerciseServiceImpl implements ExerciseService {
     private final UserContext userContext;
     private final ExerciseRepository exerciseRepository;
     private final TrainingPlanService trainingPlanService;
-    private final ExerciseDTOMapper exerciseDTOMapper;
+    private final ExerciseMapper exerciseMapper;
 
-    public ExerciseServiceImpl(UserContext userContext, ExerciseRepository exerciseRepository, @Lazy TrainingPlanService trainingPlanService, ExerciseDTOMapper exerciseDTOMapper) {
+    public ExerciseServiceImpl(UserContext userContext, ExerciseRepository exerciseRepository, @Lazy TrainingPlanService trainingPlanService, ExerciseMapper exerciseMapper) {
         this.userContext = userContext;
         this.exerciseRepository = exerciseRepository;
         this.trainingPlanService = trainingPlanService;
-        this.exerciseDTOMapper = exerciseDTOMapper;
+        this.exerciseMapper = exerciseMapper;
     }
 
     public Exercise getExerciseEntityById(Long id, User user) {
@@ -49,7 +49,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         List<ExerciseDTO> exercisesByUser = exercisePage
                 .getContent()
                 .stream()
-                .map(exerciseDTOMapper)
+                .map(exerciseMapper::toExerciseDTO)
                 .toList();
 
         return new PaginationDTO<>(
@@ -68,7 +68,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         List<Exercise> exercises = exerciseRepository.findByUserAndTrainingPlansNotContaining(user, trainingPlan);
 
-        return exercises.stream().map(exerciseDTOMapper).toList();
+        return exercises.stream().map(exerciseMapper::toExerciseDTO).toList();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         Exercise exerciseToBeSaved = Exercise.builder().exerciseName(exerciseRequest.exerciseName()).user(user).build();
         exerciseToBeSaved = exerciseRepository.save(exerciseToBeSaved);
 
-        return exerciseDTOMapper.apply(exerciseToBeSaved);
+        return exerciseMapper.toExerciseDTO(exerciseToBeSaved);
     }
 
     @Override
@@ -102,6 +102,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         exercise.setExerciseName(exerciseRequest.exerciseName());
         exercise = exerciseRepository.save(exercise);
 
-        return exerciseDTOMapper.apply(exercise);
+        return exerciseMapper.toExerciseDTO(exercise);
     }
 }
