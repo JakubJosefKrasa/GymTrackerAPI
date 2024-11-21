@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorObject> handleMethodArgumentTypeMismatchException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorObject> handleMessageNotReadableException(HttpMessageNotReadableException ex) {
         ErrorObject error = new ErrorObject(HttpStatus.BAD_REQUEST.value(), "Nesprávný datový typ!", new Date());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
