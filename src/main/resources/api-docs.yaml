@@ -1,0 +1,965 @@
+openapi: 3.0.1
+info:
+  title: GymTracker REST API
+  description: REST API exposing several endpoints for tracking workouts
+  contact:
+    name: Jakub Josef Krása
+    email: jjkrasa@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Generated server url
+security:
+  - jwtAuth: []
+tags:
+  - name: authentication
+    description: Handling authentication
+  - name: exercise
+    description: Handling exercises
+  - name: training plan
+    description: Handling training plans
+  - name: workout session
+    description: Handling workout sessions
+paths:
+  /auth/register:
+    post:
+      tags:
+        - authentication
+      summary: Creates a new user
+      description: Creates a new user specified by email, password and confirmPassword. Email must be a valid one, password must contain atleast one uppercase character, one number, special character and must be atleast 7 characters long and not longer than 255.
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        "201":
+          description: CREATED
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: object
+                    properties:
+                      emailMessage:
+                        type: string
+                        example: Neplatný email
+                      passwordMessage:
+                        type: string
+                        example: Heslo musí obsahovat alespoň jedno velké písmeno, číslici, speciální znak a být dlouhé minimálně 7 znaků a maximálně dlouhé 255 znaků!
+                      confirmPasswordMessage:
+                        type: string
+                        example: Potvrzovací heslo nesmí být prázdné!
+                  timeStamp:
+                    type: string
+                    example: 2024-11-21T05:47:50.137+00:00
+        "406":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: Hesla se musí shodovat!
+                  timeStamp:
+                    type: string
+                    example: 2024-11-21T05:47:50.137+00:00
+        "409":
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 409
+                  message:
+                    type: string
+                    example: Uživatel již existuje!
+                  timeStamp:
+                    type: string
+                    example: 2024-11-21T05:47:50.137+00:00
+  /auth/login:
+    post:
+      tags:
+        - authentication
+      summary: Logins user and sets access_token cookie.
+      description: Logins user specified by email and password. If provided credentials are invalid 401 is returned.
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Neplatné přihlašovací údaje!
+                  timeStamp:
+                    type: string
+                    example: 2024-11-21T05:47:50.137+00:00
+  /exercises:
+    get:
+      tags:
+        - exercise
+      summary: Returns user's exercises
+      description: Returns user's exercises specified by parameters pageNumber and pageSize. If page number is smaller than 0 then it returns all user's exercises
+      operationId: getExercisesByUser
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 5
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PaginatedExerciseDTO'
+        "401":
+          description: UNAUTHORIZED
+    post:
+      tags:
+        - exercise
+      summary: Creates a new exercise and returns it
+      description: Creates a new exercise specified by exerciseName and returns it back if successfuly created.
+      operationId: createExercise
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseRequest'
+        required: true
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseDTO'
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseBadRequestExampleResponse'
+        "401":
+          description: UNAUTHORIZED
+  /exercises/{id}:
+    delete:
+      tags:
+        - exercise
+      summary: Deletes exercise by id
+      description: Deletes exercise by id if exercise with id was not found 404 is returned otherwise 204 is returned.
+      operationId: deleteExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: NO CONTENT
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+    patch:
+      tags:
+        - exercise
+      summary: Changes exercise name
+      description: Changes exercise name by specified id and exerciseName in body if exercise with id was not found 404 is returned otherwise 200 is returned.
+      operationId: changeExerciseName
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ExerciseDTO'
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseBadRequestExampleResponse'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+  /exercises/not-in-training-plan/{trainingPlanId}:
+    get:
+      tags:
+        - exercise
+      summary: Returns user's exercises that aren't in specified training plan
+      description: Returns users exercises that aren't in training plan specified by id. If training plan was not found by id 404 is returned otherwise 200 is returned with list of exercises.
+      operationId: getExercisesNotInTrainingPlan
+      parameters:
+        - name: trainingPlanId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+  /training-plans:
+    get:
+      tags:
+        - training plan
+      summary: Returns user's training plans
+      description: Returns user's training plans specified by parameters pageNumber and pageSize. If page number is smaller than 0 then it returns all user's training plans
+      operationId: getTrainingPlansByUser
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 5
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTrainingPlanExercisesDTO'
+        "401":
+          description: UNAUTHORIZED
+    post:
+      tags:
+        - training plan
+      summary: Creates a new training plan and returns it
+      description: Creates a new training plan specified by trainingPlanName and returns it back if successfuly created.
+      operationId: createTrainingPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainingPlanRequest'
+        required: true
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingPlanExercisesDTO'
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingPlanBadRequestExampleResponse'
+        "401":
+          description: UNAUTHORIZED
+  /training-plans/{id}:
+    get:
+      tags:
+        - training plan
+      summary: Returns training plan by id
+      description: Returns training plan by id if training plan with id was not found 404 is returned otherwise training plan is returned
+      operationId: getTrainingPlanById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingPlanExercisesDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+    delete:
+      tags:
+        - training plan
+      summary: Deletes training plan by id
+      description: Deletes training plan by id if training plan with id was not found 404 is returned otherwise 204 is returned.
+      operationId: deleteTrainingPlanById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: NO CONTENT
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+    patch:
+      tags:
+        - training plan
+      summary: Changes training plan name
+      description: Changes training plan name by specified id and trainingPlanName in body if training plan with id was not found 404 is returned otherwise 200 is returned.
+      operationId: changeTrainingPlanName
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainingPlanRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TrainingPlanExercisesDTO'
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingPlanBadRequestExampleResponse'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+  /training-plans/{trainingPlanId}/exercises/{exerciseId}:
+    put:
+      tags:
+        - training plan
+      summary: Adds exercise in training plan and returns training plan back
+      description: Adds exercise by id in training plan by id and returns it back. If training plan or exercise wasn't found by id 404 is returned.
+      operationId: addExerciseInTrainingPlan
+      parameters:
+        - name: trainingPlanId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: exerciseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TrainingPlanExercisesDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+    delete:
+      tags:
+        - training plan
+      summary: Remove exercise from training plan
+      description: Remove exercise by id from training plan by id. If training plan or exercise wasn't found by id 404 is returned otherwise if exercise was successfuly deleted from training plan 204 is returned.
+      operationId: removeExerciseFromTrainingPlan
+      parameters:
+        - name: trainingPlanId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: exerciseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: NO CONTENT
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+  /workout-sessions:
+    get:
+      tags:
+        - workout session
+      summary: Returns user's workout sessions
+      description: Returns all user's workout sessions
+      operationId: getWorkoutSessionsByUser
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkoutSessionDTO'
+        "401":
+          description: UNAUTHORIZED
+    post:
+      tags:
+        - workout session
+      summary: Creates a new workout session and returns it
+      description: Creates a new workout session specified by date and training plan id and returns it back if successfuly created. If training plan wasn't found by id 404 is returned.
+      operationId: createWorkoutSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkoutSessionRequest'
+        required: true
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+  /workout-sessions/{id}:
+    get:
+      tags:
+        - workout session
+      summary: Returns workout session by id
+      description: Returns workout session by id if workout session with id was not found 404 is returned otherwise workout session is returned
+      operationId: getWorkoutSessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+    delete:
+      tags:
+        - workout session
+      summary: Deletes workout session by id
+      description: Deletes workout session by id if workout session with id was not found 404 is returned otherwise 204 is returned.
+      operationId: deleteWorkoutSessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: NO CONTENT
+          content:
+            '*/*':
+              schema:
+                type: object
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+  /workout-sessions/{workoutSessionId}/workout-session-exercises/{workoutSessionExerciseId}/workout-session-exercise-sets:
+    post:
+      tags:
+        - workout session
+      summary: Creates a new set for exercise by id in workout session by id
+      description: Creates a new set specified by repetitions and weight for exercise by id in workout session by id. If exercise or workout session wasn't found by id 404 is returned.
+      operationId: createExerciseSet
+      parameters:
+        - name: workoutSessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: workoutSessionExerciseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkoutSessionExerciseSetRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+  /workout-sessions/{workoutSessionId}/workout-session-exercises/{workoutSessionExerciseId}/workout-session-exercise-sets/{workoutSessionExerciseSetId}:
+    delete:
+      tags:
+        - workout session
+      summary: Deletes a set by id for exercise by id in workout session by id
+      description: Deletes a set by id for exercise by id in workout session by id. If set, exercise or workout session wasn't found by id 404 is returned otherwise if set was successfuly deleted 204 is returned.
+      operationId: deleteExerciseSetById
+      parameters:
+        - name: workoutSessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: workoutSessionExerciseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: workoutSessionExerciseSetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: NO CONTENT
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+    patch:
+      tags:
+        - workout session
+      summary: Updates a set by id for exercise by id in workout session by id
+      description: Updates a set by id specified by repetitions and weight for exercise by id in workout session by id. If set, exercise or workout session wasn't found by id 404 is returned.
+      operationId: editExerciseSet
+      parameters:
+        - name: workoutSessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: workoutSessionExerciseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: workoutSessionExerciseSetId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkoutSessionExerciseSetRequest'
+        required: true
+      responses:
+        "201":
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionDTO'
+        "401":
+          description: UNAUTHORIZED
+        "404":
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExampleResponse'
+components:
+  schemas:
+    RegisterRequest:
+      required:
+        - confirmPassword
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{7,255}$"
+          type: string
+        confirmPassword:
+          type: string
+    LoginRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    ExerciseRequest:
+      required:
+        - exerciseName
+      type: object
+      properties:
+        exerciseName:
+          maxLength: 50
+          minLength: 3
+          type: string
+    TrainingPlanRequest:
+      required:
+        - trainingPlanName
+      type: object
+      properties:
+        trainingPlanName:
+          maxLength: 50
+          minLength: 3
+          type: string
+    WorkoutSessionRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        trainingPlanId:
+          type: integer
+          format: int64
+    WorkoutSessionExerciseSetRequest:
+      required:
+        - repetitions
+        - weight
+      type: object
+      properties:
+        repetitions:
+          type: integer
+          format: int32
+        weight:
+          type: number
+          format: float
+    ExerciseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          format: int64
+        exerciseName:
+          type: string
+          example: Squat
+    PaginatedExerciseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExerciseDTO'
+        totalItems:
+          type: integer
+          example: 1
+          format: int64
+        hasPreviousPage:
+          type: boolean
+          example: false
+        hasNextPage:
+          type: boolean
+          example: false
+    TrainingPlanExercisesDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          format: int64
+        trainingPlanName:
+          type: string
+          example: "Legs"
+        exercises:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/ExerciseDTO'
+    PaginatedTrainingPlanExercisesDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrainingPlanExercisesDTO'
+        totalItems:
+          type: integer
+          example: 1
+          format: int64
+        hasPreviousPage:
+          type: boolean
+          example: false
+        hasNextPage:
+          type: boolean
+          example: false
+    WorkoutSessionDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          format: int64
+        date:
+          type: string
+          example: 01/01/2024
+          format: date
+        trainingPlan:
+          $ref: '#/components/schemas/TrainingPlanWorkoutSessionExercisesDTO'
+    TrainingPlanWorkoutSessionExercisesDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          format: int64
+        trainingPlanName:
+          type: string
+          example: Legs
+        workoutSessionExercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutSessionExerciseDTO'
+    WorkoutSessionExerciseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          format: int64
+        exercise:
+          $ref: '#/components/schemas/ExerciseSetDTO'
+    ExerciseSetDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          format: int64
+        exerciseName:
+          type: string
+          example: Squat
+        sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SetDTO'
+    SetDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          format: int64
+        repetitions:
+          type: integer
+          example: 10
+          format: int32
+        weight:
+          type: number
+          example: 100.0
+          format: float
+    ExerciseBadRequestExampleResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        errors:
+          type: object
+          properties:
+            exerciseNameMessage:
+              type: string
+              example: Bad request message
+        timeStamp:
+          type: string
+          example: 2024-11-21T05:47:50.137+00:00
+    TrainingPlanBadRequestExampleResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        errors:
+          type: object
+          properties:
+            trainingPlanNameMessage:
+              type: string
+              example: Bad request message
+        timeStamp:
+          type: string
+          example: 2024-11-21T05:47:50.137+00:00
+    NotFoundExampleResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: Not found message
+        timeStamp:
+          type: string
+          example: 2024-11-21T05:47:50.137+00:00
+  securitySchemes:
+    jwtAuth:
+      type: apiKey
+      description: JWT auth through access_token cookie
+      name: access_token
+      in: cookie
