@@ -1,8 +1,38 @@
 services:
-  db:
+  db-postgres:
     image: "postgres:16-alpine"
+    container_name: db-postgres
+    restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: gym_tracker
+      - POSTGRES_DB=gym_tracker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gym-tracker-server:
+    build: ./
+    container_name: gym-tracker-server
+    environment:
+      - DB_SERVER=db-postgres
+      - DB_NAME=gym_tracker
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - JWT_SECRET_KEY=a3168e169320b5d96317fbf6af60986f8454845068a52fc0fa478aaf96e9cc8d
+      - JWT_EXPIRATION=604800000 # specified in ms
+      - CROSS_ORIGIN=http://localhost:5173
+    ports:
+      - 8080:8080
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
