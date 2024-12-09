@@ -1,6 +1,7 @@
 package com.kuba.GymTrackerAPI.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class BeansConfig {
     private final UserDetailsService userDetailsService;
+    @Value("${application.security.crossOrigin}")
+    private String allowedCrossOrigin;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -47,7 +50,7 @@ public class BeansConfig {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        config.setAllowedOrigins(Collections.singletonList(allowedCrossOrigin));
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.ORIGIN,
                 HttpHeaders.CONTENT_TYPE,

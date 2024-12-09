@@ -18,3 +18,4 @@ application:
     jwt:
       secret-key: a3168e169320b5d96317fbf6af60986f8454845068a52fc0fa478aaf96e9cc8d
       expiration: 604800000 # 1000 * 60 * 60 * 24 * 7 = 7 days
+    crossOrigin: http://localhost:5173
