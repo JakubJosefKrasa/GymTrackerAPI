@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TrainingPlanServiceImpl implements TrainingPlanService {
+public class TrainingPlanService {
     private final UserContext userContext;
     private final TrainingPlanRepository trainingPlanRepository;
     private final ExerciseService exerciseService;
@@ -31,7 +31,6 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         return trainingPlanRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Tréninkový plán nenalezen!"));
     }
 
-    @Override
     public PaginationDTO<TrainingPlanExercisesDTO> getTrainingPlansByUser(int pageNumber, int pageSize) {
         User user = userContext.getAuthenticatedUser();
 
@@ -58,7 +57,6 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         );
     }
 
-    @Override
     public TrainingPlanExercisesDTO getTrainingPlanById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
@@ -67,7 +65,6 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
     }
 
-    @Override
     @Transactional
     public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequest trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
@@ -83,7 +80,6 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlanToBeSaved);
     }
 
-    @Override
     @Transactional
     public void deleteTrainingPlanById(Long id) {
         User user = userContext.getAuthenticatedUser();
@@ -92,7 +88,6 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         trainingPlanRepository.delete(trainingPlan);
     }
 
-    @Override
     @Transactional
     public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
@@ -104,7 +99,6 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
     }
 
-    @Override
     @Transactional
     public TrainingPlanExercisesDTO addExerciseInTrainingPlan(Long trainingPlanId, Long exerciseId) {
         User user = userContext.getAuthenticatedUser();
@@ -132,7 +126,6 @@ public class TrainingPlanServiceImpl implements TrainingPlanService {
         return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
     }
 
-    @Override
     @Transactional
     public void removeExerciseFromTrainingPlan(Long trainingPlanId, Long exerciseId) {
         User user = userContext.getAuthenticatedUser();

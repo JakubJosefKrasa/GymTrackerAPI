@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TrainingPlanServiceImplTest {
+class TrainingPlanServiceTest {
 
     @Mock
     private UserContext userContext;
@@ -37,7 +37,7 @@ class TrainingPlanServiceImplTest {
     @Mock
     private TrainingPlanMapper trainingPlanMapper;
     @InjectMocks
-    private TrainingPlanServiceImpl trainingPlanService;
+    private TrainingPlanService trainingPlanService;
 
     private User user;
     private final Long legsTrainingPlanId = 1L;
