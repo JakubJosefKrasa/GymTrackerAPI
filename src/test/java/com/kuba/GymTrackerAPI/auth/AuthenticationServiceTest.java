@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthenticationServiceImplTest {
+class AuthenticationServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -40,7 +40,7 @@ class AuthenticationServiceImplTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private AuthenticationServiceImpl authenticationService;
+    private AuthenticationService authenticationService;
 
     private Role userRole;
 

@@ -24,10 +24,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ExerciseServiceImplTest {
+class ExerciseServiceTest {
 
     @InjectMocks
-    private ExerciseServiceImpl exerciseService;
+    private ExerciseService exerciseService;
     @Mock
     private UserContext userContext;
     @Mock
