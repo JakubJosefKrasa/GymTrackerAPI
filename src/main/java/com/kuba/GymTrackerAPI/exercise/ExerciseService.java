@@ -16,13 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class ExerciseServiceImpl implements ExerciseService {
+public class ExerciseService {
     private final UserContext userContext;
     private final ExerciseRepository exerciseRepository;
     private final TrainingPlanService trainingPlanService;
     private final ExerciseMapper exerciseMapper;
 
-    public ExerciseServiceImpl(UserContext userContext, ExerciseRepository exerciseRepository, @Lazy TrainingPlanService trainingPlanService, ExerciseMapper exerciseMapper) {
+    public ExerciseService(UserContext userContext, ExerciseRepository exerciseRepository, @Lazy TrainingPlanService trainingPlanService, ExerciseMapper exerciseMapper) {
         this.userContext = userContext;
         this.exerciseRepository = exerciseRepository;
         this.trainingPlanService = trainingPlanService;
@@ -33,7 +33,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         return exerciseRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Cvik nenalezen!"));
     }
 
-    @Override
     public PaginationDTO<ExerciseDTO> getExercisesByUser(int pageNumber, int pageSize) {
         User user = userContext.getAuthenticatedUser();
 
@@ -60,7 +59,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         );
     }
 
-    @Override
     public List<ExerciseDTO> getExercisesNotInTrainingPlan(Long trainingPlanId) {
         User user = userContext.getAuthenticatedUser();
 
@@ -71,7 +69,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         return exercises.stream().map(exerciseMapper::toExerciseDTO).toList();
     }
 
-    @Override
     @Transactional
     public ExerciseDTO createExercise(ExerciseRequest exerciseRequest) {
         User user = userContext.getAuthenticatedUser();
@@ -82,7 +79,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         return exerciseMapper.toExerciseDTO(exerciseToBeSaved);
     }
 
-    @Override
     @Transactional
     public void deleteExerciseById(Long id) {
         User user = userContext.getAuthenticatedUser();
@@ -93,7 +89,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         exerciseRepository.delete(exercise);
     }
 
-    @Override
     @Transactional
     public ExerciseDTO changeExerciseName(Long id, ExerciseRequest exerciseRequest) {
         User user = userContext.getAuthenticatedUser();
