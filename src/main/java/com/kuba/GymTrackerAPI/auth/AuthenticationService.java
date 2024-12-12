@@ -22,14 +22,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    @Override
     public void register(RegisterRequest request) {
         if (userRepository.findByEmail(request.email().toLowerCase()).isPresent()) throw new AlreadyExistsException("Uživatel již existuje!");
 
@@ -46,7 +45,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(newUser);
     }
 
-    @Override
     public void login(LoginRequest request, HttpServletResponse response) {
         try {
             Authentication authenticatedUser = authenticationManager.authenticate(
