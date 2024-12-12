@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class WorkoutSessionServiceImplTest {
+class WorkoutSessionServiceTest {
 
     @Mock
     private UserContext userContext;
@@ -48,7 +48,7 @@ class WorkoutSessionServiceImplTest {
     private WorkoutSessionMapper workoutSessionMapper;
 
     @InjectMocks
-    private WorkoutSessionServiceImpl workoutSessionService;
+    private WorkoutSessionService workoutSessionService;
 
     private User user;
 

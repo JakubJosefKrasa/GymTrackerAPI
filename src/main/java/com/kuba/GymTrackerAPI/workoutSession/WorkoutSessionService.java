@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WorkoutSessionServiceImpl implements WorkoutSessionService {
+public class WorkoutSessionService {
     private final UserContext userContext;
     private final WorkoutSessionRepository workoutSessionRepository;
     private final TrainingPlanService trainingPlanService;
@@ -34,7 +34,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
         return workoutSessionRepository.findByIdAndUser(workoutSessionId, user).orElseThrow(() -> new NotFoundException("Trénink nenalezen!"));
     }
 
-    @Override
     public List<WorkoutSessionDTO> getWorkoutSessionsByUser() {
         User user = userContext.getAuthenticatedUser();
 
@@ -46,7 +45,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
                 .toList();
     }
 
-    @Override
     public WorkoutSessionDTO getWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
@@ -55,7 +53,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
         return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
     }
 
-    @Override
     @Transactional
     public WorkoutSessionDTO createWorkoutSession(WorkoutSessionRequest workoutSessionRequest) {
         User user = userContext.getAuthenticatedUser();
@@ -85,7 +82,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
         return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
     }
 
-    @Override
     @Transactional
     public void deleteWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
@@ -95,7 +91,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
         workoutSessionRepository.deleteById(id);
     }
 
-    @Override
     @Transactional
     public WorkoutSessionDTO createExerciseSet(
             Long workoutSessionId,
@@ -123,7 +118,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
         return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
     }
 
-    @Override
     @Transactional
     public void deleteExerciseSetById(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId) {
         User user = userContext.getAuthenticatedUser();
@@ -135,7 +129,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
         workoutSessionExerciseSetService.deleteWorkoutSessionExerciseSetById(workoutSessionExerciseSetId);
     }
 
-    @Override
     @Transactional
     public WorkoutSessionDTO editExerciseSet(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId, WorkoutSessionExerciseSetRequest workoutSessionExerciseSetRequest) {
         User user = userContext.getAuthenticatedUser();
