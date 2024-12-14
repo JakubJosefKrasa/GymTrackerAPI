@@ -28,6 +28,8 @@ services:
       - JWT_SECRET_KEY=a3168e169320b5d96317fbf6af60986f8454845068a52fc0fa478aaf96e9cc8d
       - JWT_EXPIRATION=604800000 # specified in ms
       - CROSS_ORIGIN=http://localhost:5173
+    volumes:
+      - app_logs:/app/logs
     ports:
       - 8080:8080
     depends_on:
@@ -36,3 +38,4 @@ services:
 
 volumes:
   postgres_data:
+  app_logs:
