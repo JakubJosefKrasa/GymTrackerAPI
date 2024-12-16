@@ -20,9 +20,9 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -36,7 +36,8 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try {
-            log.info("Path: " + request.getServletPath());
+            log.info("[REQEUST]: Method: {} Path: {}", request.getMethod(), request.getServletPath());
+
             if (request.getServletPath().contains("/auth")) {
                 filterChain.doFilter(request, response);
 
@@ -53,8 +54,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
 
-            log.info("Checking accessToken == null");
+            log.info("Checking if access token is null");
             if (accessToken == null) {
+                log.info("Access token is null");
                 filterChain.doFilter(request, response);
 
                 return;
@@ -62,11 +64,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
             final String email = jwtService.extractUsername(accessToken);
 
-            log.info("Checking if email != null && getAuthentication() == null");
+            log.info("Checking if email isn't null and getAuthentication() is null - access token: {} ", accessToken);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                log.info("email: {}",email);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                log.info("Checking if tokenIsValid()");
+                log.info("Checking if token is valid");
                 if (jwtService.isTokenValid(accessToken, userDetails)) {
                     log.info("Token is valid");
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -82,7 +85,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            log.error("Exception caught in jwtFilter: " + e);
+            log.error("Exception caught in jwtFilter: ", e);
             Cookie accessTokenCookie = new Cookie("access_token", null);
             accessTokenCookie.setHttpOnly(true);
             accessTokenCookie.setSecure(true);
