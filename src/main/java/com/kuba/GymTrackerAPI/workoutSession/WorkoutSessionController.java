@@ -30,10 +30,9 @@ public class WorkoutSessionController {
     }
 
     @PostMapping
-    public ResponseEntity<WorkoutSessionDTO> createWorkoutSession(@RequestBody WorkoutSessionRequest workoutSessionRequest) {
+    public ResponseEntity<WorkoutSessionDTO> createWorkoutSession(@Valid @RequestBody WorkoutSessionRequest workoutSessionRequest) {
         WorkoutSessionDTO workoutSession = workoutSessionService.createWorkoutSession(workoutSessionRequest);
 
-        System.out.println(workoutSession);
         return new ResponseEntity<>(workoutSession, HttpStatus.CREATED);
     }
 
