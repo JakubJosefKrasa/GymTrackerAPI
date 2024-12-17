@@ -518,7 +518,7 @@ paths:
       tags:
         - workout session
       summary: Creates a new workout session and returns it
-      description: Creates a new workout session specified by date and training plan id and returns it back if successfuly created. If training plan wasn't found by id 404 is returned.
+      description: Creates a new workout session specified by date and training plan id and returns it back if successfuly created. If date or training plan id is null 400 is returned with message. If training plan wasn't found by id 404 is returned.
       operationId: createWorkoutSession
       requestBody:
         content:
@@ -533,6 +533,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkoutSessionDTO'
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionBadRequestExampleResponse'
         "401":
           description: UNAUTHORIZED
         "404":
@@ -603,7 +609,7 @@ paths:
       tags:
         - workout session
       summary: Creates a new set for exercise by id in workout session by id
-      description: Creates a new set specified by repetitions and weight for exercise by id in workout session by id. If exercise or workout session wasn't found by id 404 is returned.
+      description: Creates a new set specified by repetitions and weight for exercise by id in workout session by id. If repetitions or weight is null then 400 is returned back with message. If exercise or workout session wasn't found by id 404 is returned.
       operationId: createExerciseSet
       parameters:
         - name: workoutSessionId
@@ -631,6 +637,12 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/WorkoutSessionDTO'
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionExerciseSetBadRequestExampleResponse'
         "401":
           description: UNAUTHORIZED
         "404":
@@ -684,7 +696,7 @@ paths:
       tags:
         - workout session
       summary: Updates a set by id for exercise by id in workout session by id
-      description: Updates a set by id specified by repetitions and weight for exercise by id in workout session by id. If set, exercise or workout session wasn't found by id 404 is returned.
+      description: Updates a set by id specified by repetitions and weight for exercise by id in workout session by id. If repetitions or weight is null then 400 is returned back with message. If set, exercise or workout session wasn't found by id 404 is returned.
       operationId: editExerciseSet
       parameters:
         - name: workoutSessionId
@@ -715,9 +727,16 @@ paths:
         "201":
           description: CREATED
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/WorkoutSessionDTO'
+        "400":
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutSessionExerciseSetBadRequestExampleResponse'
+
         "401":
           description: UNAUTHORIZED
         "404":
@@ -728,7 +747,7 @@ paths:
                 $ref: '#/components/schemas/NotFoundExampleResponse'
 components:
   schemas:
-    RegisterRequest:
+    RegisterRequestDTO:
       required:
         - confirmPassword
         - email
@@ -742,7 +761,7 @@ components:
           type: string
         confirmPassword:
           type: string
-    LoginRequest:
+    LoginRequestDTO:
       required:
         - email
         - password
@@ -752,7 +771,7 @@ components:
           type: string
         password:
           type: string
-    ExerciseRequest:
+    ExerciseRequestDTO:
       required:
         - exerciseName
       type: object
@@ -761,7 +780,7 @@ components:
           maxLength: 50
           minLength: 3
           type: string
-    TrainingPlanRequest:
+    TrainingPlanRequestDTO:
       required:
         - trainingPlanName
       type: object
@@ -770,7 +789,7 @@ components:
           maxLength: 50
           minLength: 3
           type: string
-    WorkoutSessionRequest:
+    WorkoutSessionRequestDTO:
       type: object
       properties:
         date:
@@ -779,7 +798,7 @@ components:
         trainingPlanId:
           type: integer
           format: int64
-    WorkoutSessionExerciseSetRequest:
+    WorkoutSessionExerciseSetRequestDTO:
       required:
         - repetitions
         - weight
@@ -940,6 +959,42 @@ components:
           type: object
           properties:
             trainingPlanNameMessage:
+              type: string
+              example: Bad request message
+        timeStamp:
+          type: string
+          example: 2024-11-21T05:47:50.137+00:00
+    WorkoutSessionBadRequestExampleResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        errors:
+          type: object
+          properties:
+            dateMessage:
+              type: string
+              example: Bad request message
+            trainingPlanIdMessage:
+              type: string
+              example: Bad request message
+        timeStamp:
+          type: string
+          example: 2024-11-21T05:47:50.137+00:00
+    WorkoutSessionExerciseSetBadRequestExampleResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        errors:
+          type: object
+          properties:
+            repetitionsMessage:
+              type: string
+              example: Bad request message
+            weightMessage:
               type: string
               example: Bad request message
         timeStamp:
