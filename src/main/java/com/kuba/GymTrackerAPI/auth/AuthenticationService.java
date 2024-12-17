@@ -29,7 +29,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public void register(RegisterRequest request) {
+    public void register(RegisterRequestDTO request) {
         if (userRepository.findByEmail(request.email().toLowerCase()).isPresent()) throw new AlreadyExistsException("Uživatel již existuje!");
 
         if (!request.password().equals(request.confirmPassword())) throw new BadRequestException("Hesla se musí shodovat!");
@@ -45,7 +45,7 @@ public class AuthenticationService {
         userRepository.save(newUser);
     }
 
-    public void login(LoginRequest request, HttpServletResponse response) {
+    public void login(LoginRequestDTO request, HttpServletResponse response) {
         try {
             Authentication authenticatedUser = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

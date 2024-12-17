@@ -51,7 +51,7 @@ class AuthenticationServiceTest {
 
     @Test
     public void register_ShouldThrowAlreadyExistsException() {
-        RegisterRequest registerRequest = new RegisterRequest(
+        RegisterRequestDTO registerRequest = new RegisterRequestDTO(
                 "email@gmail.com",
                 "123Password*",
                 "123Password*"
@@ -65,7 +65,7 @@ class AuthenticationServiceTest {
 
     @Test
     public void register_ShouldThrowBadRequestException() {
-        RegisterRequest registerRequest = new RegisterRequest(
+        RegisterRequestDTO registerRequest = new RegisterRequestDTO(
                 "email@gmail.com",
                 "123Password*",
                 "123Password"
@@ -79,7 +79,7 @@ class AuthenticationServiceTest {
 
     @Test
     public void register_ShouldRegisterUser() {
-        RegisterRequest registerRequest = new RegisterRequest(
+        RegisterRequestDTO registerRequest = new RegisterRequestDTO(
                 "email@gmail.com",
                 "123Password*",
                 "123Password*"
@@ -97,7 +97,7 @@ class AuthenticationServiceTest {
 
     @Test
     public void login_ShouldThrowInvalidCredentialsException() {
-        LoginRequest loginRequest = new LoginRequest("test", "test");
+        LoginRequestDTO loginRequest = new LoginRequestDTO("test", "test");
         HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(InvalidCredentialsException.class);
@@ -107,7 +107,7 @@ class AuthenticationServiceTest {
 
     @Test
     public void login_ShouldLoginUser() {
-        LoginRequest loginRequest = new LoginRequest("test@gmail.com", "123Password*");
+        LoginRequestDTO loginRequest = new LoginRequestDTO("test@gmail.com", "123Password*");
         HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
         Authentication mockedAuthentication = mock(Authentication.class);
         User user = User.builder().id(1L).email("test@gmail.com").roles(List.of(userRole)).build();
