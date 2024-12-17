@@ -80,7 +80,7 @@ public class ExerciseService {
     }
 
     @Transactional
-    public ExerciseDTO createExercise(ExerciseRequest exerciseRequest) {
+    public ExerciseDTO createExercise(ExerciseRequestDTO exerciseRequest) {
         User user = userContext.getAuthenticatedUser();
         log.info("[METHOD]: createExercise - Creating exercise with exerciseRequest: {} for user_id: {}", exerciseRequest, user.getId());
 
@@ -110,7 +110,7 @@ public class ExerciseService {
     }
 
     @Transactional
-    public ExerciseDTO changeExerciseName(Long id, ExerciseRequest exerciseRequest) {
+    public ExerciseDTO changeExerciseName(Long id, ExerciseRequestDTO exerciseRequest) {
         User user = userContext.getAuthenticatedUser();
         log.info("[METHOD]: changeExerciseName - Changing exerciseName of exercise by ID: {} with exerciseRequest {} for user_id: {}", id, exerciseRequest, user.getId());
 

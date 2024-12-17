@@ -152,7 +152,7 @@ class ExerciseServiceTest {
 
     @Test
     public void crateExercise_ShouldCreateExercise() {
-        ExerciseRequest exerciseRequest = new ExerciseRequest("Squat");
+        ExerciseRequestDTO exerciseRequest = new ExerciseRequestDTO("Squat");
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(exerciseRepository.save(any(Exercise.class))).thenReturn(squatExercise);
@@ -192,7 +192,7 @@ class ExerciseServiceTest {
 
     @Test
     public void changeExerciseName_ShouldChangeExerciseName() {
-        ExerciseRequest exerciseRequest = new ExerciseRequest("Legpress");
+        ExerciseRequestDTO exerciseRequest = new ExerciseRequestDTO("Legpress");
         ExerciseDTO updatedExerciseDTO = new ExerciseDTO(squatExerciseId, "Legpress");
 
 

@@ -31,7 +31,7 @@ public class ExerciseController {
     }
 
     @PostMapping
-    public ResponseEntity<ExerciseDTO> createExercise(@Valid @RequestBody ExerciseRequest exerciseRequest) {
+    public ResponseEntity<ExerciseDTO> createExercise(@Valid @RequestBody ExerciseRequestDTO exerciseRequest) {
         ExerciseDTO createdExercise = exerciseService.createExercise(exerciseRequest);
 
         return new ResponseEntity<>(createdExercise, HttpStatus.CREATED);
@@ -45,7 +45,7 @@ public class ExerciseController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ExerciseDTO> changeExerciseName(@PathVariable Long id, @Valid @RequestBody ExerciseRequest exerciseRequest) {
+    public ResponseEntity<ExerciseDTO> changeExerciseName(@PathVariable Long id, @Valid @RequestBody ExerciseRequestDTO exerciseRequest) {
         ExerciseDTO exercise = exerciseService.changeExerciseName(id, exerciseRequest);
 
         return new ResponseEntity<>(exercise, HttpStatus.OK);
