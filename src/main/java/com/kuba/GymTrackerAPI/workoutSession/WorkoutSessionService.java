@@ -62,7 +62,7 @@ public class WorkoutSessionService {
     }
 
     @Transactional
-    public WorkoutSessionDTO createWorkoutSession(WorkoutSessionRequest workoutSessionRequest) {
+    public WorkoutSessionDTO createWorkoutSession(WorkoutSessionRequestDTO workoutSessionRequest) {
         User user = userContext.getAuthenticatedUser();
         log.info(
                 "[METHOD]: createWorkoutSession - Creating workout session with workoutSessionRequest: {} for user_id: {}",

@@ -138,7 +138,7 @@ class WorkoutSessionServiceTest {
     @Test
     public void createWorkoutSession_ShouldCreateWorkoutSession() {
         Long pullTrainingPlanId = 2L;
-        WorkoutSessionRequest workoutSessionRequest = new WorkoutSessionRequest(LocalDate.now(), pullTrainingPlanId);
+        WorkoutSessionRequestDTO workoutSessionRequest = new WorkoutSessionRequestDTO(LocalDate.now(), pullTrainingPlanId);
 
         Long deadLiftId = 1L;
         Long pulloverId = 2L;
