@@ -5,17 +5,33 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/training-plans")
 @RequiredArgsConstructor
 public class TrainingPlanController {
+
     private final TrainingPlanService trainingPlanService;
 
     @GetMapping
-    public ResponseEntity<PaginationDTO<TrainingPlanExercisesDTO>> getTrainingPlansByUser(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "5") int pageSize) {
-        PaginationDTO<TrainingPlanExercisesDTO> trainingPlansByUser = trainingPlanService.getTrainingPlansByUser(pageNumber, pageSize);
+    public ResponseEntity<PaginationDTO<TrainingPlanExercisesDTO>> getTrainingPlansByUser(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "5") int pageSize
+    ) {
+        PaginationDTO<TrainingPlanExercisesDTO> trainingPlansByUser = trainingPlanService.getTrainingPlansByUser(
+                pageNumber,
+                pageSize
+        );
 
         return new ResponseEntity<>(trainingPlansByUser, HttpStatus.OK);
     }
@@ -28,7 +44,9 @@ public class TrainingPlanController {
     }
 
     @PostMapping
-    public ResponseEntity<TrainingPlanExercisesDTO> createTrainingPlan(@Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest) {
+    public ResponseEntity<TrainingPlanExercisesDTO> createTrainingPlan(
+            @Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest
+    ) {
         TrainingPlanExercisesDTO trainingPlan = trainingPlanService.createTrainingPlan(trainingPlanRequest);
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.CREATED);
@@ -42,21 +60,33 @@ public class TrainingPlanController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TrainingPlanExercisesDTO> changeTrainingPlanName(@PathVariable Long id, @Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest) {
+    public ResponseEntity<TrainingPlanExercisesDTO> changeTrainingPlanName(
+            @PathVariable Long id,
+            @Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest
+    ) {
         TrainingPlanExercisesDTO trainingPlan = trainingPlanService.changeTrainingPlanName(id, trainingPlanRequest);
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.OK);
     }
 
     @PutMapping("/{trainingPlanId}/exercises/{exerciseId}")
-    public ResponseEntity<TrainingPlanExercisesDTO> addExerciseInTrainingPlan(@PathVariable Long trainingPlanId, @PathVariable Long exerciseId) {
-        TrainingPlanExercisesDTO trainingPlan = trainingPlanService.addExerciseInTrainingPlan(trainingPlanId, exerciseId);
+    public ResponseEntity<TrainingPlanExercisesDTO> addExerciseInTrainingPlan(
+            @PathVariable Long trainingPlanId,
+            @PathVariable Long exerciseId
+    ) {
+        TrainingPlanExercisesDTO trainingPlan = trainingPlanService.addExerciseInTrainingPlan(
+                trainingPlanId,
+                exerciseId
+        );
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.OK);
     }
 
     @DeleteMapping("/{trainingPlanId}/exercises/{exerciseId}")
-    public ResponseEntity<Void> removeExerciseFromTrainingPlan(@PathVariable Long trainingPlanId, @PathVariable Long exerciseId) {
+    public ResponseEntity<Void> removeExerciseFromTrainingPlan(
+            @PathVariable Long trainingPlanId,
+            @PathVariable Long exerciseId
+    ) {
         trainingPlanService.removeExerciseFromTrainingPlan(trainingPlanId, exerciseId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
