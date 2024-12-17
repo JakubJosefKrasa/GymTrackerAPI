@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,14 +19,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.io.IOException;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
+
     private final UserDetailsService userDetailsService;
+
     @Qualifier("handlerExceptionResolver")
     private final HandlerExceptionResolver resolver;
 
@@ -66,7 +68,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             log.info("Checking if email isn't null and getAuthentication() is null - access token: {} ", accessToken);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                log.info("email: {}",email);
+                log.info("email: {}", email);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 log.info("Checking if token is valid");

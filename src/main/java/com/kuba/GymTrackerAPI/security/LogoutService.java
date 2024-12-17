@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LogoutService implements LogoutHandler {
+
     @Override
     public void logout(
             HttpServletRequest request,
