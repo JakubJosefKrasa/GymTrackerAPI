@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record RegisterRequestDTO(
+
         @NotNull(message = "Emailová adresa nesmí být prázdná!")
         @NotBlank(message = "Emailová adresa nesmí být prázdná!")
         @Email(
@@ -13,6 +14,7 @@ public record RegisterRequestDTO(
                 flags = Pattern.Flag.CASE_INSENSITIVE
         )
         String email,
+
         @NotNull(message = "Heslo nesmí být prázdné!")
         @NotBlank(message = "Heslo nesmí být prázdné!")
         @Pattern(
@@ -20,6 +22,7 @@ public record RegisterRequestDTO(
                 message = "Heslo musí obsahovat alespoň jedno velké písmeno, číslici, speciální znak a být dlouhé minimálně 7 znaků a maximálně dlouhé 255 znaků!"
         )
         String password,
+
         @NotNull(message = "Potvrzovací heslo nesmí být prázdné!")
         @NotBlank(message = "Potvrzovací heslo nesmí být prázdné!")
         String confirmPassword
