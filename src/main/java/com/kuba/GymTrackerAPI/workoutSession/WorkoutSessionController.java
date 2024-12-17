@@ -1,6 +1,6 @@
 package com.kuba.GymTrackerAPI.workoutSession;
 
-import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequest;
+import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,7 +47,7 @@ public class WorkoutSessionController {
     public ResponseEntity<WorkoutSessionDTO> createExerciseSet(
             @PathVariable Long workoutSessionId,
             @PathVariable Long workoutSessionExerciseId,
-            @Valid @RequestBody WorkoutSessionExerciseSetRequest workoutSessionExerciseSetRequest
+            @Valid @RequestBody WorkoutSessionExerciseSetRequestDTO workoutSessionExerciseSetRequest
     ) {
         WorkoutSessionDTO workoutSession = workoutSessionService.createExerciseSet(
                 workoutSessionId,
@@ -74,7 +74,7 @@ public class WorkoutSessionController {
             @PathVariable Long workoutSessionId,
             @PathVariable Long workoutSessionExerciseId,
             @PathVariable Long workoutSessionExerciseSetId,
-            @Valid @RequestBody WorkoutSessionExerciseSetRequest workoutSessionExerciseSetRequest
+            @Valid @RequestBody WorkoutSessionExerciseSetRequestDTO workoutSessionExerciseSetRequest
     ) {
         WorkoutSessionDTO workoutSession = workoutSessionService.editExerciseSet(
                 workoutSessionId,

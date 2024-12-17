@@ -622,7 +622,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WorkoutSessionExerciseSetRequest'
+              $ref: '#/components/schemas/WorkoutSessionExerciseSetRequestDTO'
         required: true
       responses:
         "200":
@@ -709,7 +709,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WorkoutSessionExerciseSetRequest'
+              $ref: '#/components/schemas/WorkoutSessionExerciseSetRequestDTO'
         required: true
       responses:
         "201":

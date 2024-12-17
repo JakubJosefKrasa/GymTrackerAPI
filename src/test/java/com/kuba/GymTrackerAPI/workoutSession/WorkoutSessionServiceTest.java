@@ -13,7 +13,7 @@ import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExerciseDTO;
 import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExerciseService;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.SetDTO;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSet;
-import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequest;
+import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequestDTO;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -188,7 +188,7 @@ class WorkoutSessionServiceTest {
 
     @Test
     public void createExerciseSet_ShouldThrowNotFoundException() {
-        WorkoutSessionExerciseSetRequest createRequest = new WorkoutSessionExerciseSetRequest(8, 110);
+        WorkoutSessionExerciseSetRequestDTO createRequest = new WorkoutSessionExerciseSetRequestDTO(8, 110);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
@@ -200,7 +200,7 @@ class WorkoutSessionServiceTest {
 
     @Test
     public void createExerciseSet_ShouldCreateExerciseSet() {
-        WorkoutSessionExerciseSetRequest createRequest = new WorkoutSessionExerciseSetRequest(8, 110);
+        WorkoutSessionExerciseSetRequestDTO createRequest = new WorkoutSessionExerciseSetRequestDTO(8, 110);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
@@ -240,7 +240,7 @@ class WorkoutSessionServiceTest {
 
     @Test
     public void editExerciseSet_ShouldEditExerciseSet() {
-        WorkoutSessionExerciseSetRequest editRequest = new WorkoutSessionExerciseSetRequest(8, 110);
+        WorkoutSessionExerciseSetRequestDTO editRequest = new WorkoutSessionExerciseSetRequestDTO(8, 110);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));

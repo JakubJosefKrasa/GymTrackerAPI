@@ -9,7 +9,7 @@ import com.kuba.GymTrackerAPI.user.User;
 import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExercise;
 import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExerciseService;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSet;
-import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequest;
+import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequestDTO;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,7 +111,7 @@ public class WorkoutSessionService {
     public WorkoutSessionDTO createExerciseSet(
             Long workoutSessionId,
             Long workoutSessionExerciseId,
-            WorkoutSessionExerciseSetRequest workoutSessionExerciseSetRequest
+            WorkoutSessionExerciseSetRequestDTO workoutSessionExerciseSetRequest
     ) {
         User user = userContext.getAuthenticatedUser();
         log.info(
@@ -159,7 +159,7 @@ public class WorkoutSessionService {
     }
 
     @Transactional
-    public WorkoutSessionDTO editExerciseSet(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId, WorkoutSessionExerciseSetRequest workoutSessionExerciseSetRequest) {
+    public WorkoutSessionDTO editExerciseSet(Long workoutSessionId, Long workoutSessionExerciseId, Long workoutSessionExerciseSetId, WorkoutSessionExerciseSetRequestDTO workoutSessionExerciseSetRequest) {
         User user = userContext.getAuthenticatedUser();
         log.info(
                 "[METHOD]: editExerciseSet - Editing workoutSessionExerciseSet by ID: {} - workoutSessionExercise by ID: {} and workoutSession by ID: {} with workoutSessionExerciseSetRequest: {}",
