@@ -142,7 +142,7 @@ class TrainingPlanServiceTest {
 
     @Test
     public void createTrainingPlan_ShouldCreateTrainingPlan() {
-        TrainingPlanRequest trainingPlanRequest = new TrainingPlanRequest("Legs");
+        TrainingPlanRequestDTO trainingPlanRequest = new TrainingPlanRequestDTO("Legs");
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanRepository.save(any(TrainingPlan.class))).thenReturn(legsTrainingPlan);
@@ -172,7 +172,7 @@ class TrainingPlanServiceTest {
 
     @Test
     public void changeTrainingPlanName_ShouldChangeTrainingPlanName() {
-        TrainingPlanRequest trainingPlanRequest = new TrainingPlanRequest("Push");
+        TrainingPlanRequestDTO trainingPlanRequest = new TrainingPlanRequestDTO("Push");
 
         TrainingPlan updatedTrainingPlan = TrainingPlan.builder().id(legsTrainingPlanId).trainingPlanName("Push").user(user).build();
         TrainingPlanExercisesDTO updatedTrainingPlanDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Push", new HashSet<>(Set.of()));

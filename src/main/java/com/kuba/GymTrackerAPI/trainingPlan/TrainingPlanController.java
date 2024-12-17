@@ -28,7 +28,7 @@ public class TrainingPlanController {
     }
 
     @PostMapping
-    public ResponseEntity<TrainingPlanExercisesDTO> createTrainingPlan(@Valid @RequestBody TrainingPlanRequest trainingPlanRequest) {
+    public ResponseEntity<TrainingPlanExercisesDTO> createTrainingPlan(@Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest) {
         TrainingPlanExercisesDTO trainingPlan = trainingPlanService.createTrainingPlan(trainingPlanRequest);
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.CREATED);
@@ -42,7 +42,7 @@ public class TrainingPlanController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TrainingPlanExercisesDTO> changeTrainingPlanName(@PathVariable Long id, @Valid @RequestBody TrainingPlanRequest trainingPlanRequest) {
+    public ResponseEntity<TrainingPlanExercisesDTO> changeTrainingPlanName(@PathVariable Long id, @Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest) {
         TrainingPlanExercisesDTO trainingPlan = trainingPlanService.changeTrainingPlanName(id, trainingPlanRequest);
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.OK);

@@ -76,7 +76,7 @@ public class TrainingPlanService {
     }
 
     @Transactional
-    public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequest trainingPlanRequest) {
+    public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequestDTO trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
         log.info("[METHOD]: createTrainingPlan - Creating trainingPlan with trainingPlanRequest: {} for user_id: {}", trainingPlanRequest, user.getId());
 
@@ -104,7 +104,7 @@ public class TrainingPlanService {
     }
 
     @Transactional
-    public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequest trainingPlanRequest) {
+    public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequestDTO trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
         log.info("[METHOD]: changeTrainingPlanName - Changing trainingPlanName of trainingPlan by ID: {} with trainingPlanRequest {} for user_id: {}", id, trainingPlanRequest, user.getId());
 
