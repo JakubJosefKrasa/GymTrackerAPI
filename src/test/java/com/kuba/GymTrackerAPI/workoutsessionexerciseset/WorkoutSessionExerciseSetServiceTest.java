@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.workoutSessionExerciseSet;
+package com.kuba.GymTrackerAPI.workoutsessionexerciseset;
 
 import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;

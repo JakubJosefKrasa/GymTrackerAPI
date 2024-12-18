@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.workoutSessionExerciseSet;
+package com.kuba.GymTrackerAPI.workoutsessionexerciseset;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

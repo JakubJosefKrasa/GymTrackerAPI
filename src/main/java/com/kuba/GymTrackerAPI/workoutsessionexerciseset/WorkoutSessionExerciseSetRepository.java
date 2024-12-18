@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.workoutSessionExerciseSet;
+package com.kuba.GymTrackerAPI.workoutsessionexerciseset;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

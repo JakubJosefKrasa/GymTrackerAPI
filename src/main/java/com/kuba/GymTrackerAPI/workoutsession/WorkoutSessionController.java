@@ -1,6 +1,6 @@
 package com.kuba.GymTrackerAPI.workoutsession;
 
-import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSetRequestDTO;
+import com.kuba.GymTrackerAPI.workoutsessionexerciseset.WorkoutSessionExerciseSetRequestDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

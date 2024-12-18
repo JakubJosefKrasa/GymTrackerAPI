@@ -2,7 +2,7 @@ package com.kuba.GymTrackerAPI.workoutsessionexercise;
 
 import com.kuba.GymTrackerAPI.exercise.Exercise;
 import com.kuba.GymTrackerAPI.workoutsession.WorkoutSession;
-import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.WorkoutSessionExerciseSet;
+import com.kuba.GymTrackerAPI.workoutsessionexerciseset.WorkoutSessionExerciseSet;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
