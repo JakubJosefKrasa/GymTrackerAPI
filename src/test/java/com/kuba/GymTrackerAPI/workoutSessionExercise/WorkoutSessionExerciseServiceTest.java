@@ -1,7 +1,7 @@
 package com.kuba.GymTrackerAPI.workoutSessionExercise;
 
 import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
-import com.kuba.GymTrackerAPI.workoutSession.WorkoutSession;
+import com.kuba.GymTrackerAPI.workoutsession.WorkoutSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

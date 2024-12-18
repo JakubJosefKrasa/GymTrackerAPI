@@ -8,7 +8,7 @@ import com.kuba.GymTrackerAPI.exercise.ExerciseService;
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
 import com.kuba.GymTrackerAPI.security.UserContext;
 import com.kuba.GymTrackerAPI.user.User;
-import com.kuba.GymTrackerAPI.workoutSession.WorkoutSession;
+import com.kuba.GymTrackerAPI.workoutsession.WorkoutSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
