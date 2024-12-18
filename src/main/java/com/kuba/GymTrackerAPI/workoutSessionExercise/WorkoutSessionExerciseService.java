@@ -1,7 +1,7 @@
 package com.kuba.GymTrackerAPI.workoutSessionExercise;
 
 import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
-import com.kuba.GymTrackerAPI.workoutSession.WorkoutSession;
+import com.kuba.GymTrackerAPI.workoutsession.WorkoutSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

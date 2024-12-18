@@ -3,7 +3,7 @@ package com.kuba.GymTrackerAPI.trainingplan;
 
 import com.kuba.GymTrackerAPI.exercise.Exercise;
 import com.kuba.GymTrackerAPI.user.User;
-import com.kuba.GymTrackerAPI.workoutSession.WorkoutSession;
+import com.kuba.GymTrackerAPI.workoutsession.WorkoutSession;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

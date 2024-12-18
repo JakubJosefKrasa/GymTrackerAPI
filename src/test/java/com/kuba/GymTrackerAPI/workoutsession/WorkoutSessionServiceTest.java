@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.workoutSession;
+package com.kuba.GymTrackerAPI.workoutsession;
 
 import com.kuba.GymTrackerAPI.exceptions.NotFoundException;
 import com.kuba.GymTrackerAPI.exercise.Exercise;

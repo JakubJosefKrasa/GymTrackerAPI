@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.workoutSession;
+package com.kuba.GymTrackerAPI.workoutsession;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
