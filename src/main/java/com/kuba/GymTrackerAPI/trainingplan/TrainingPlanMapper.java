@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.trainingPlan;
+package com.kuba.GymTrackerAPI.trainingplan;
 
 import com.kuba.GymTrackerAPI.exercise.ExerciseMapper;
 import org.mapstruct.Mapper;

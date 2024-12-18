@@ -1,7 +1,7 @@
 package com.kuba.GymTrackerAPI.workoutSession;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlan;
+import com.kuba.GymTrackerAPI.trainingplan.TrainingPlan;
 import com.kuba.GymTrackerAPI.user.User;
 import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExercise;
 import jakarta.persistence.CascadeType;

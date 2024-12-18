@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.trainingPlan;
+package com.kuba.GymTrackerAPI.trainingplan;
 
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
 import jakarta.validation.Valid;

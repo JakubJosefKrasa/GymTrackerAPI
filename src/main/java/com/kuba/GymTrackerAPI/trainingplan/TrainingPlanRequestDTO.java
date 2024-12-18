@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.trainingPlan;
+package com.kuba.GymTrackerAPI.trainingplan;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

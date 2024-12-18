@@ -1,6 +1,6 @@
 package com.kuba.GymTrackerAPI.exercise;
 
-import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlan;
+import com.kuba.GymTrackerAPI.trainingplan.TrainingPlan;
 import com.kuba.GymTrackerAPI.user.User;
 import java.util.List;
 import java.util.Optional;

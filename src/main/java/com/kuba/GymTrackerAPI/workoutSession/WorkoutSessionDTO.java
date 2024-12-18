@@ -1,7 +1,7 @@
 package com.kuba.GymTrackerAPI.workoutSession;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kuba.GymTrackerAPI.trainingPlan.TrainingPlanWorkoutSessionExercisesDTO;
+import com.kuba.GymTrackerAPI.trainingplan.TrainingPlanWorkoutSessionExercisesDTO;
 
 import java.time.LocalDate;
 
