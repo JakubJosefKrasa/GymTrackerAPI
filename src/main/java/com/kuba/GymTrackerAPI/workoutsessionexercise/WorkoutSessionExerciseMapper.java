@@ -1,4 +1,4 @@
-package com.kuba.GymTrackerAPI.workoutSessionExercise;
+package com.kuba.GymTrackerAPI.workoutsessionexercise;
 
 import com.kuba.GymTrackerAPI.exercise.ExerciseSetDTO;
 import com.kuba.GymTrackerAPI.workoutSessionExerciseSet.SetMapper;

@@ -7,7 +7,7 @@ import com.kuba.GymTrackerAPI.exercise.ExerciseService;
 import com.kuba.GymTrackerAPI.pagination.PaginationDTO;
 import com.kuba.GymTrackerAPI.security.UserContext;
 import com.kuba.GymTrackerAPI.user.User;
-import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExercise;
+import com.kuba.GymTrackerAPI.workoutsessionexercise.WorkoutSessionExercise;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

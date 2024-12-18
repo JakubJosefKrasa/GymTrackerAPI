@@ -1,6 +1,6 @@
 package com.kuba.GymTrackerAPI.trainingplan;
 
-import com.kuba.GymTrackerAPI.workoutSessionExercise.WorkoutSessionExerciseDTO;
+import com.kuba.GymTrackerAPI.workoutsessionexercise.WorkoutSessionExerciseDTO;
 
 import java.util.List;
 
