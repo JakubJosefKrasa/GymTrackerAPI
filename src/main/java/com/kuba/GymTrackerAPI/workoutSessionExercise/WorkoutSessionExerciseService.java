@@ -10,15 +10,27 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class WorkoutSessionExerciseService {
+
     private final WorkoutSessionExerciseRepository workoutSessionExerciseRepository;
 
-    public WorkoutSessionExercise getWorkoutSessionExerciseEntityByIdAndWorkoutSession(Long workoutSessionExerciseId, WorkoutSession workoutSession) {
-        log.info("[METHOD]: getWorkoutSessionExerciseEntityByIdAndWorkoutSession - Fetching workoutSessionExercise by ID: {} and workoutSession_id: {}", workoutSessionExerciseId, workoutSession.getId());
+    public WorkoutSessionExercise getWorkoutSessionExerciseEntityByIdAndWorkoutSession(
+            Long workoutSessionExerciseId, WorkoutSession workoutSession
+    ) {
+        log.info(
+                "[METHOD]: getWorkoutSessionExerciseEntityByIdAndWorkoutSession - Fetching workoutSessionExercise by ID: {} and workoutSession_id: {}",
+                workoutSessionExerciseId,
+                workoutSession.getId()
+        );
 
-        return workoutSessionExerciseRepository.findByIdAndWorkoutSession(workoutSessionExerciseId, workoutSession).orElseThrow(() -> {
-            log.warn("[METHOD]: getWorkoutSessionExerciseEntityByIdAndWorkoutSession - workoutSessionExercise was not found by ID: {} and workoutSession_id: {}", workoutSessionExerciseId, workoutSession.getId());
+        return workoutSessionExerciseRepository.findByIdAndWorkoutSession(workoutSessionExerciseId, workoutSession)
+                                               .orElseThrow(() -> {
+                                                   log.warn(
+                                                           "[METHOD]: getWorkoutSessionExerciseEntityByIdAndWorkoutSession - workoutSessionExercise was not found by ID: {} and workoutSession_id: {}",
+                                                           workoutSessionExerciseId,
+                                                           workoutSession.getId()
+                                                   );
 
-            return new NotFoundException("Cvik v tréninku nenalezen!");
-        });
+                                                   return new NotFoundException("Cvik v tréninku nenalezen!");
+                                               });
     }
 }
