@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class WorkoutSessionService {
 
     private final WorkoutSessionMapper workoutSessionMapper;
 
+    @Transactional
     public WorkoutSession getWorkoutSessionEntityById(Long workoutSessionId, User user) {
         log.info(
                 "[METHOD]: getWorkoutSessionEntityById - Fetching workoutSession by ID: {} and user_id: {}",
@@ -42,15 +44,26 @@ public class WorkoutSessionService {
                 user.getId()
         );
 
-        return workoutSessionRepository.findByIdAndUser(workoutSessionId, user).orElseThrow(() -> {
-            log.warn(
-                    "[METHOD]: getWorkoutSessionEntityById - workoutSession was not found by ID: {} and user_id: {}",
-                    workoutSessionId,
-                    user.getId()
-            );
+        WorkoutSession workoutSession = workoutSessionRepository.findByIdAndUser(workoutSessionId, user)
+                                                                .orElseThrow(() -> {
+                                                                    log.warn(
+                                                                            "[METHOD]: getWorkoutSessionEntityById - workoutSession was not found by ID: {} and user_id: {}",
+                                                                            workoutSessionId,
+                                                                            user.getId()
+                                                                    );
 
-            return new NotFoundException("Trénink nenalezen!");
-        });
+                                                                    return new NotFoundException("Trénink nenalezen!");
+                                                                });
+
+
+        /*
+        workoutSession.getWorkoutSessionExercises().forEach(
+                workoutSessionExercise -> Hibernate.initialize(workoutSessionExercise.getWorkoutSessionExerciseSets())
+        );
+         */
+
+
+        return workoutSession;
     }
 
     public List<WorkoutSessionDTO> getWorkoutSessionsByUser() {
@@ -66,6 +79,7 @@ public class WorkoutSessionService {
                 .toList();
     }
 
+    @Transactional
     public WorkoutSessionDTO getWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
 

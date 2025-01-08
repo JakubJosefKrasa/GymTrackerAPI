@@ -2,6 +2,7 @@ package com.kuba.gymtrackerapi.workoutsessionexerciseset;
 
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExercise;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -24,7 +25,7 @@ public class WorkoutSessionExerciseSet {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_session_exercise_id")
     private WorkoutSessionExercise workoutSessionExercise;
 

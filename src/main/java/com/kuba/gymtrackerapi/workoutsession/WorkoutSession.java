@@ -6,6 +6,7 @@ import com.kuba.gymtrackerapi.user.User;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExercise;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -35,11 +36,11 @@ public class WorkoutSession {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate date;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "training_plan_id")
     private TrainingPlan trainingPlan;
 
