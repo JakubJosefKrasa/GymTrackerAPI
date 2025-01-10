@@ -3,7 +3,7 @@ spring:
     name: GymTrackerAPI
   profiles:
     active: dev
-git   jpa:
+  jpa:
     open-in-view: false
 
 server:
