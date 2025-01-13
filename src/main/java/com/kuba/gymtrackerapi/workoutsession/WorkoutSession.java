@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,5 +48,5 @@ public class WorkoutSession {
 
     @OrderBy("id ASC")
     @OneToMany(mappedBy = "workoutSession", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<WorkoutSessionExercise> workoutSessionExercises = new HashSet<>();
+    private Set<WorkoutSessionExercise> workoutSessionExercises = new LinkedHashSet<>();
 }

@@ -12,9 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,5 +43,5 @@ public class Exercise {
     private Set<TrainingPlan> trainingPlans = new HashSet<>();
 
     @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkoutSessionExercise> workoutSessionExercises = new ArrayList<>();
+    private Set<WorkoutSessionExercise> workoutSessionExercises = new LinkedHashSet<>();
 }

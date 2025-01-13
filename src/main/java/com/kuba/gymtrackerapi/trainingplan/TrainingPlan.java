@@ -1,12 +1,13 @@
 package com.kuba.gymtrackerapi.trainingplan;
 
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import com.kuba.gymtrackerapi.exercise.Exercise;
 import com.kuba.gymtrackerapi.user.User;
 import com.kuba.gymtrackerapi.workoutsession.WorkoutSession;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,18 +40,19 @@ public class TrainingPlan {
 
     private String trainingPlanName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "training_plan_exercise",
             joinColumns = @JoinColumn(name = "training_plan_id"),
             inverseJoinColumns = @JoinColumn(name = "exercise_id")
     )
-    private Set<Exercise> exercises = new HashSet<>();
+    @OrderColumn(name = "arrangement_index")
+    private List<Exercise> exercises = new ArrayList<>();
 
     @OneToMany(mappedBy = "trainingPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkoutSession> workoutSessions = new ArrayList<>();
+    private Set<WorkoutSession> workoutSessions = new HashSet<>();
 }
