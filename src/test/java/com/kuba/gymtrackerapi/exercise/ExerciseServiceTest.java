@@ -169,8 +169,8 @@ class ExerciseServiceTest {
 
     @Test
     public void deleteExerciseById_ShouldDeleteExercise() {
-        TrainingPlan trainingPlan1 = TrainingPlan.builder().id(1L).exercises(new HashSet<>()).build();
-        TrainingPlan trainingPlan2 = TrainingPlan.builder().id(2L).exercises(new HashSet<>()).build();
+        TrainingPlan trainingPlan1 = TrainingPlan.builder().id(1L).exercises(new ArrayList<>()).build();
+        TrainingPlan trainingPlan2 = TrainingPlan.builder().id(2L).exercises(new ArrayList<>()).build();
 
         squatExercise.setTrainingPlans(Set.of(trainingPlan1, trainingPlan2));
 

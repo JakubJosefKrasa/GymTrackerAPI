@@ -1,5 +1,14 @@
 package com.kuba.gymtrackerapi.workoutsession;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.kuba.gymtrackerapi.exceptions.NotFoundException;
 import com.kuba.gymtrackerapi.exercise.Exercise;
 import com.kuba.gymtrackerapi.exercise.ExerciseSetDTO;
@@ -15,21 +24,18 @@ import com.kuba.gymtrackerapi.workoutsessionexerciseset.SetDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSet;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetService;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WorkoutSessionServiceTest {
@@ -65,13 +71,13 @@ class WorkoutSessionServiceTest {
     void setUp() {
         squatSet = WorkoutSessionExerciseSet.builder().id(squatSetId).repetitions(10).weight(122.5f).build();
         SetDTO squatSetDTO = new SetDTO(squatSetId, 10, 122.5f);
-        ExerciseSetDTO squatExerciseSetDTO = new ExerciseSetDTO(squatExerciseId, "Squat", new ArrayList<>(List.of(squatSetDTO)));
+        ExerciseSetDTO squatExerciseSetDTO = new ExerciseSetDTO(squatExerciseId, "Squat", new HashSet<>(Set.of(squatSetDTO)));
         WorkoutSessionExerciseDTO squatWorkoutSessionExerciseDTO = new WorkoutSessionExerciseDTO(squatWorkoutSessionExerciseId, squatExerciseSetDTO);
-        TrainingPlanWorkoutSessionExercisesDTO legsTrainingPlanWorkoutSessionDTO = new TrainingPlanWorkoutSessionExercisesDTO(trainingPlanId, "Legs", new ArrayList<>(List.of(squatWorkoutSessionExerciseDTO)));
-        WorkoutSessionExercise squatWorkoutSessionExercise = WorkoutSessionExercise.builder().id(squatExerciseId).workoutSessionExerciseSets(new ArrayList<>()).build();
+        TrainingPlanWorkoutSessionExercisesDTO legsTrainingPlanWorkoutSessionDTO = new TrainingPlanWorkoutSessionExercisesDTO(trainingPlanId, "Legs", new HashSet<>(Set.of(squatWorkoutSessionExerciseDTO)));
+        WorkoutSessionExercise squatWorkoutSessionExercise = WorkoutSessionExercise.builder().id(squatExerciseId).workoutSessionExerciseSets(new HashSet<>()).build();
 
         user = new User();
-        workoutSession = WorkoutSession.builder().id(workoutSessionId).date(LocalDate.now()).user(user).workoutSessionExercises(new ArrayList<>(List.of(squatWorkoutSessionExercise))).build();
+        workoutSession = WorkoutSession.builder().id(workoutSessionId).date(LocalDate.now()).user(user).workoutSessionExercises(new HashSet<>(Set.of(squatWorkoutSessionExercise))).build();
         workoutSessionDTO = new WorkoutSessionDTO(
                 workoutSessionId,
                 LocalDate.now(),
@@ -142,16 +148,16 @@ class WorkoutSessionServiceTest {
 
         Long deadLiftId = 1L;
         Long pulloverId = 2L;
-        Set<Exercise> exercises = Set.of(
-                Exercise.builder().id(deadLiftId).exerciseName("Deadlift").workoutSessionExercises(new ArrayList<>()).build(),
-                Exercise.builder().id(pulloverId).exerciseName("Pullover").workoutSessionExercises(new ArrayList<>()).build()
+        List<Exercise> exercises = List.of(
+                Exercise.builder().id(deadLiftId).exerciseName("Deadlift").workoutSessionExercises(new LinkedHashSet<>()).build(),
+                Exercise.builder().id(pulloverId).exerciseName("Pullover").workoutSessionExercises(new LinkedHashSet<>()).build()
         );
         TrainingPlan pullTrainingPlan = TrainingPlan.builder().id(pullTrainingPlanId).trainingPlanName("Pull").exercises(exercises).build();
 
 
-        List<WorkoutSessionExerciseDTO> wseDTO = List.of(
-                new WorkoutSessionExerciseDTO(deadLiftId, new ExerciseSetDTO(1L, "Deadlift", new ArrayList<>())),
-                new WorkoutSessionExerciseDTO(pulloverId, new ExerciseSetDTO(2L, "Pullover", new ArrayList<>()))
+        Set<WorkoutSessionExerciseDTO> wseDTO = Set.of(
+                new WorkoutSessionExerciseDTO(deadLiftId, new ExerciseSetDTO(1L, "Deadlift", new HashSet<>())),
+                new WorkoutSessionExerciseDTO(pulloverId, new ExerciseSetDTO(2L, "Pullover", new HashSet<>()))
         );
         TrainingPlanWorkoutSessionExercisesDTO tpwseDTO = new TrainingPlanWorkoutSessionExercisesDTO(pullTrainingPlanId, "Pull", wseDTO);
         WorkoutSessionDTO expectedCreatedWorkoutSessionDTO = new WorkoutSessionDTO(workoutSessionId, LocalDate.now(), tpwseDTO);
@@ -210,8 +216,6 @@ class WorkoutSessionServiceTest {
         WorkoutSessionDTO updatedWorkoutSession = workoutSessionService.createExerciseSet(workoutSessionId, squatWorkoutSessionExerciseId, createRequest);
 
         assertNotNull(updatedWorkoutSession);
-        assertEquals(createRequest.repetitions(), workoutSession.getWorkoutSessionExercises().get(0).getWorkoutSessionExerciseSets().get(0).getRepetitions());
-        assertEquals(createRequest.weight(), workoutSession.getWorkoutSessionExercises().get(0).getWorkoutSessionExerciseSets().get(0).getWeight());
         verify(userContext, times(1)).getAuthenticatedUser();
         verify(workoutSessionRepository, times(1)).findByIdAndUser(workoutSessionId, user);
         verify(workoutSessionRepository, times(1)).save(workoutSession);

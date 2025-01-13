@@ -3,6 +3,8 @@ spring:
     name: GymTrackerAPI
   profiles:
     active: dev
+  jpa:
+    open-in-view: false
 
 server:
   servlet:

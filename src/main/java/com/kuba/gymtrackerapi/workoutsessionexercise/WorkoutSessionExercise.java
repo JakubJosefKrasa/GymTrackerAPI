@@ -1,5 +1,7 @@
 package com.kuba.gymtrackerapi.workoutsessionexercise;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import com.kuba.gymtrackerapi.exercise.Exercise;
 import com.kuba.gymtrackerapi.workoutsession.WorkoutSession;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSet;
@@ -10,8 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.OrderBy;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,14 +33,15 @@ public class WorkoutSessionExercise {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "workout_session_id", nullable = false)
     private WorkoutSession workoutSession;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
 
+    @OrderBy("id ASC")
     @OneToMany(mappedBy = "workoutSessionExercise", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkoutSessionExerciseSet> workoutSessionExerciseSets = new ArrayList<>();
+    private Set<WorkoutSessionExerciseSet> workoutSessionExerciseSets = new HashSet<>();
 }

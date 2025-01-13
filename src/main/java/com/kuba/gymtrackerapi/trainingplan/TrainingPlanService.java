@@ -99,7 +99,7 @@ public class TrainingPlanService {
         TrainingPlan trainingPlanToBeSaved = TrainingPlan.builder()
                                                          .trainingPlanName(trainingPlanRequest.trainingPlanName())
                                                          .user(user)
-                                                         .exercises(new HashSet<>())
+                                                         .exercises(new ArrayList<>())
                                                          .build();
 
         trainingPlanToBeSaved = trainingPlanRepository.save(trainingPlanToBeSaved);
@@ -186,7 +186,7 @@ public class TrainingPlanService {
             WorkoutSessionExercise workoutSessionExercise = WorkoutSessionExercise.builder()
                                                                                   .workoutSession(workoutSession)
                                                                                   .exercise(exercise)
-                                                                                  .workoutSessionExerciseSets(new ArrayList<>())
+                                                                                  .workoutSessionExerciseSets(new HashSet<>())
                                                                                   .build();
 
             log.info(

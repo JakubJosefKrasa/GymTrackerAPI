@@ -1,5 +1,7 @@
 package com.kuba.gymtrackerapi.workoutsession;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlan;
 import com.kuba.gymtrackerapi.user.User;
@@ -11,9 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,14 +38,15 @@ public class WorkoutSession {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate date;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "training_plan_id")
     private TrainingPlan trainingPlan;
 
-    @OneToMany(mappedBy = "workoutSession", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkoutSessionExercise> workoutSessionExercises = new ArrayList<>();
+    @OrderBy("id ASC")
+    @OneToMany(mappedBy = "workoutSession", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<WorkoutSessionExercise> workoutSessionExercises = new LinkedHashSet<>();
 }
