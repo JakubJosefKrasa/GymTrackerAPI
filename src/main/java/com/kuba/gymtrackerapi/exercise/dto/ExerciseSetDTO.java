@@ -1,4 +1,4 @@
-package com.kuba.gymtrackerapi.exercise;
+package com.kuba.gymtrackerapi.exercise.dto;
 
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.SetDTO;
 import java.util.Set;

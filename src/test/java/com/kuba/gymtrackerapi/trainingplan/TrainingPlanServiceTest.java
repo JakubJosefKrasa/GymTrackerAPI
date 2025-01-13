@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import com.kuba.gymtrackerapi.exceptions.BadRequestException;
 import com.kuba.gymtrackerapi.exceptions.NotFoundException;
 import com.kuba.gymtrackerapi.exercise.Exercise;
-import com.kuba.gymtrackerapi.exercise.ExerciseDTO;
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseDTO;
 import com.kuba.gymtrackerapi.exercise.ExerciseService;
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
 import com.kuba.gymtrackerapi.security.UserContext;

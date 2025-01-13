@@ -1,6 +1,8 @@
 package com.kuba.gymtrackerapi.exercise;
 
 import com.kuba.gymtrackerapi.exceptions.NotFoundException;
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseDTO;
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseRequestDTO;
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlan;

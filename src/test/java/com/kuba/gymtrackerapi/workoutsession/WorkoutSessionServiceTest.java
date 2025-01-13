@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.kuba.gymtrackerapi.exceptions.NotFoundException;
 import com.kuba.gymtrackerapi.exercise.Exercise;
-import com.kuba.gymtrackerapi.exercise.ExerciseSetDTO;
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseSetDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlan;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlanService;

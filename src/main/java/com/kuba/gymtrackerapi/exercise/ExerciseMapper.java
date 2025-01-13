@@ -1,5 +1,6 @@
 package com.kuba.gymtrackerapi.exercise;
 
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
