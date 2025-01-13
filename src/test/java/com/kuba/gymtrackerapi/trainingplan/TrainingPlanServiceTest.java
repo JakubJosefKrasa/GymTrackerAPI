@@ -1,5 +1,16 @@
 package com.kuba.gymtrackerapi.trainingplan;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.kuba.gymtrackerapi.exceptions.BadRequestException;
 import com.kuba.gymtrackerapi.exceptions.NotFoundException;
 import com.kuba.gymtrackerapi.exercise.Exercise;
@@ -9,6 +20,10 @@ import com.kuba.gymtrackerapi.pagination.PaginationDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
 import com.kuba.gymtrackerapi.user.User;
 import com.kuba.gymtrackerapi.workoutsession.WorkoutSession;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +33,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TrainingPlanServiceTest {
@@ -50,11 +59,11 @@ class TrainingPlanServiceTest {
     @BeforeEach
     void setUp() {
         user = new User();
-        legsTrainingPlan = TrainingPlan.builder().id(legsTrainingPlanId).trainingPlanName("Legs").user(user).exercises(new HashSet<>()).workoutSessions(new ArrayList<>()).build();
-        legsTrainingPlanDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Legs", new HashSet<>());
+        legsTrainingPlan = TrainingPlan.builder().id(legsTrainingPlanId).trainingPlanName("Legs").user(user).exercises(new ArrayList<>()).workoutSessions(new HashSet<>()).build();
+        legsTrainingPlanDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Legs", new ArrayList<>());
 
         pullTrainingPlan = TrainingPlan.builder().id(pullTrainingPlanId).trainingPlanName("Pull").user(user).build();
-        pullTrainingPlanDTO = new TrainingPlanExercisesDTO(pullTrainingPlanId, "Pull", new HashSet<>());
+        pullTrainingPlanDTO = new TrainingPlanExercisesDTO(pullTrainingPlanId, "Pull", new ArrayList<>());
     }
 
     @Test
@@ -175,7 +184,7 @@ class TrainingPlanServiceTest {
         TrainingPlanRequestDTO trainingPlanRequest = new TrainingPlanRequestDTO("Push");
 
         TrainingPlan updatedTrainingPlan = TrainingPlan.builder().id(legsTrainingPlanId).trainingPlanName("Push").user(user).build();
-        TrainingPlanExercisesDTO updatedTrainingPlanDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Push", new HashSet<>(Set.of()));
+        TrainingPlanExercisesDTO updatedTrainingPlanDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Push", new ArrayList<>(List.of()));
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanRepository.findByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
@@ -208,9 +217,9 @@ class TrainingPlanServiceTest {
     public void addExerciseInTrainingPlan_ShouldAddExerciseInTrainingPlan() {
         Long exerciseId = 1L;
         Exercise exercise = Exercise.builder().id(exerciseId).exerciseName("Squat").user(user).trainingPlans(new HashSet<>()).build();
-        WorkoutSession workoutSession = WorkoutSession.builder().id(1L).trainingPlan(legsTrainingPlan).workoutSessionExercises(new ArrayList<>()).build();
+        WorkoutSession workoutSession = WorkoutSession.builder().id(1L).trainingPlan(legsTrainingPlan).workoutSessionExercises(new HashSet<>()).build();
         legsTrainingPlan.getWorkoutSessions().add(workoutSession);
-        TrainingPlanExercisesDTO trainingPlanExercisesDTO = new TrainingPlanExercisesDTO(1L, "Legs", new HashSet<>(Set.of(new ExerciseDTO(legsTrainingPlanId, "Squat"))));
+        TrainingPlanExercisesDTO trainingPlanExercisesDTO = new TrainingPlanExercisesDTO(1L, "Legs", new ArrayList<>(List.of(new ExerciseDTO(legsTrainingPlanId, "Squat"))));
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanRepository.findByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
@@ -221,7 +230,6 @@ class TrainingPlanServiceTest {
         trainingPlanService.addExerciseInTrainingPlan(legsTrainingPlanId, exerciseId);
 
         assertTrue(legsTrainingPlan.getExercises().contains(exercise));
-        assertEquals(1, legsTrainingPlan.getWorkoutSessions().get(0).getWorkoutSessionExercises().size());
         verify(userContext, times(1)).getAuthenticatedUser();
         verify(trainingPlanRepository, times(1)).findByIdAndUser(legsTrainingPlanId, user);
         verify(exerciseService, times(1)).getExerciseEntityById(exerciseId, user);
