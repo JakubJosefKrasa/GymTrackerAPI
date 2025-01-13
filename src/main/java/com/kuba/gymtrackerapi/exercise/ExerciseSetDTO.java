@@ -1,12 +1,11 @@
 package com.kuba.gymtrackerapi.exercise;
 
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.SetDTO;
-
-import java.util.List;
+import java.util.Set;
 
 public record ExerciseSetDTO(
         Long id,
         String exerciseName,
-        List<SetDTO> sets
+        Set<SetDTO> sets
 ) {
 }

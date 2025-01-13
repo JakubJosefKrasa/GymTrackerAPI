@@ -11,11 +11,10 @@ import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExerciseServi
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSet;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetService;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +34,7 @@ public class WorkoutSessionService {
     private final WorkoutSessionExerciseSetService workoutSessionExerciseSetService;
 
     private final WorkoutSessionMapper workoutSessionMapper;
-
-    @Transactional
+    
     public WorkoutSession getWorkoutSessionEntityById(Long workoutSessionId, User user) {
         log.info(
                 "[METHOD]: getWorkoutSessionEntityById - Fetching workoutSession by ID: {} and user_id: {}",
@@ -44,7 +42,7 @@ public class WorkoutSessionService {
                 user.getId()
         );
 
-        WorkoutSession workoutSession = workoutSessionRepository.findByIdAndUser(workoutSessionId, user)
+        return workoutSessionRepository.findByIdAndUser(workoutSessionId, user)
                                                                 .orElseThrow(() -> {
                                                                     log.warn(
                                                                             "[METHOD]: getWorkoutSessionEntityById - workoutSession was not found by ID: {} and user_id: {}",
@@ -54,16 +52,6 @@ public class WorkoutSessionService {
 
                                                                     return new NotFoundException("Trénink nenalezen!");
                                                                 });
-
-
-        /*
-        workoutSession.getWorkoutSessionExercises().forEach(
-                workoutSessionExercise -> Hibernate.initialize(workoutSessionExercise.getWorkoutSessionExerciseSets())
-        );
-         */
-
-
-        return workoutSession;
     }
 
     public List<WorkoutSessionDTO> getWorkoutSessionsByUser() {
@@ -79,7 +67,6 @@ public class WorkoutSessionService {
                 .toList();
     }
 
-    @Transactional
     public WorkoutSessionDTO getWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
@@ -113,14 +100,14 @@ public class WorkoutSessionService {
                                                       .date(workoutSessionRequest.date())
                                                       .user(user)
                                                       .trainingPlan(trainingPlan)
-                                                      .workoutSessionExercises(new ArrayList<>())
+                                                      .workoutSessionExercises(new HashSet<>())
                                                       .build();
 
         for (Exercise exercise : trainingPlan.getExercises()) {
             WorkoutSessionExercise workoutSessionExercise = WorkoutSessionExercise.builder()
                                                                                   .workoutSession(workoutSession)
                                                                                   .exercise(exercise)
-                                                                                  .workoutSessionExerciseSets(new ArrayList<>())
+                                                                                  .workoutSessionExerciseSets(new HashSet<>())
                                                                                   .build();
 
             log.info(
