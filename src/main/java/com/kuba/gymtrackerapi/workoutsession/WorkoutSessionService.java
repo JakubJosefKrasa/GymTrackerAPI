@@ -11,7 +11,7 @@ import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExercise;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExerciseService;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSet;
-import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetRequestDTO;
+import com.kuba.gymtrackerapi.workoutsessionexerciseset.dto.WorkoutSessionExerciseSetRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetService;
 import java.util.HashSet;
 import java.util.List;
