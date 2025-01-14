@@ -1,4 +1,4 @@
-package com.kuba.gymtrackerapi.workoutsession;
+package com.kuba.gymtrackerapi.workoutsession.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanWorkoutSessionExercisesDTO;

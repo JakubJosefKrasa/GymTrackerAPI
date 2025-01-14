@@ -1,5 +1,7 @@
 package com.kuba.gymtrackerapi.workoutsession;
 
+import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionDTO;
+import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetRequestDTO;
 import jakarta.validation.Valid;
 import java.util.List;
