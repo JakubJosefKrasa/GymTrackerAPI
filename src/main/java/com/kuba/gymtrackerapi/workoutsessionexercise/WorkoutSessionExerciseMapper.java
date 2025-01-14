@@ -1,11 +1,12 @@
 package com.kuba.gymtrackerapi.workoutsessionexercise;
 
-import com.kuba.gymtrackerapi.exercise.ExerciseSetDTO;
-import com.kuba.gymtrackerapi.workoutsessionexerciseset.SetMapper;
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseSetDTO;
+import com.kuba.gymtrackerapi.workoutsessionexercise.dto.WorkoutSessionExerciseDTO;
+import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = SetMapper.class)
+@Mapper(componentModel = "spring", uses = WorkoutSessionExerciseSetMapper.class)
 public interface WorkoutSessionExerciseMapper {
 
     @Mapping(target = "id", source = "id")

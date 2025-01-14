@@ -11,18 +11,20 @@ import static org.mockito.Mockito.when;
 
 import com.kuba.gymtrackerapi.exceptions.NotFoundException;
 import com.kuba.gymtrackerapi.exercise.Exercise;
-import com.kuba.gymtrackerapi.exercise.ExerciseSetDTO;
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseSetDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlan;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlanService;
-import com.kuba.gymtrackerapi.trainingplan.TrainingPlanWorkoutSessionExercisesDTO;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanWorkoutSessionExercisesDTO;
 import com.kuba.gymtrackerapi.user.User;
+import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionDTO;
+import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExercise;
-import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExerciseDTO;
+import com.kuba.gymtrackerapi.workoutsessionexercise.dto.WorkoutSessionExerciseDTO;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExerciseService;
-import com.kuba.gymtrackerapi.workoutsessionexerciseset.SetDTO;
+import com.kuba.gymtrackerapi.workoutsessionexerciseset.dto.WorkoutSessionExerciseSetDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSet;
-import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetRequestDTO;
+import com.kuba.gymtrackerapi.workoutsessionexerciseset.dto.WorkoutSessionExerciseSetRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.WorkoutSessionExerciseSetService;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -70,7 +72,7 @@ class WorkoutSessionServiceTest {
     @BeforeEach
     void setUp() {
         squatSet = WorkoutSessionExerciseSet.builder().id(squatSetId).repetitions(10).weight(122.5f).build();
-        SetDTO squatSetDTO = new SetDTO(squatSetId, 10, 122.5f);
+        WorkoutSessionExerciseSetDTO squatSetDTO = new WorkoutSessionExerciseSetDTO(squatSetId, 10, 122.5f);
         ExerciseSetDTO squatExerciseSetDTO = new ExerciseSetDTO(squatExerciseId, "Squat", new HashSet<>(Set.of(squatSetDTO)));
         WorkoutSessionExerciseDTO squatWorkoutSessionExerciseDTO = new WorkoutSessionExerciseDTO(squatWorkoutSessionExerciseId, squatExerciseSetDTO);
         TrainingPlanWorkoutSessionExercisesDTO legsTrainingPlanWorkoutSessionDTO = new TrainingPlanWorkoutSessionExercisesDTO(trainingPlanId, "Legs", new HashSet<>(Set.of(squatWorkoutSessionExerciseDTO)));

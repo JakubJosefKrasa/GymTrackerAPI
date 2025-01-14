@@ -1,6 +1,8 @@
 package com.kuba.gymtrackerapi.trainingplan;
 
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanExercisesDTO;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

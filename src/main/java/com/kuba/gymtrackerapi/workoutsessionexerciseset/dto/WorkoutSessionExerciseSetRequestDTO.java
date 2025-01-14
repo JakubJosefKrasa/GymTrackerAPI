@@ -1,4 +1,4 @@
-package com.kuba.gymtrackerapi.workoutsessionexerciseset;
+package com.kuba.gymtrackerapi.workoutsessionexerciseset.dto;
 
 import jakarta.validation.constraints.NotNull;
 

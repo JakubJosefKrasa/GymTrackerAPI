@@ -1,5 +1,7 @@
 package com.kuba.gymtrackerapi.exercise;
 
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseDTO;
+import com.kuba.gymtrackerapi.exercise.dto.ExerciseRequestDTO;
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
 import jakarta.validation.Valid;
 import java.util.List;

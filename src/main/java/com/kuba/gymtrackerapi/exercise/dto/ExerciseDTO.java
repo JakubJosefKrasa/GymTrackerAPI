@@ -1,4 +1,4 @@
-package com.kuba.gymtrackerapi.exercise;
+package com.kuba.gymtrackerapi.exercise.dto;
 
 public record ExerciseDTO(
         Long id,
