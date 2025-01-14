@@ -1,6 +1,7 @@
 package com.kuba.gymtrackerapi.workoutsessionexercise;
 
 import com.kuba.gymtrackerapi.exercise.dto.ExerciseSetDTO;
+import com.kuba.gymtrackerapi.workoutsessionexercise.dto.WorkoutSessionExerciseDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.SetMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
