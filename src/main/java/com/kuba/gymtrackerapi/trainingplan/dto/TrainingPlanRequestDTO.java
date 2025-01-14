@@ -1,4 +1,4 @@
-package com.kuba.gymtrackerapi.trainingplan;
+package com.kuba.gymtrackerapi.trainingplan.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -18,6 +18,8 @@ import com.kuba.gymtrackerapi.exercise.dto.ExerciseDTO;
 import com.kuba.gymtrackerapi.exercise.ExerciseService;
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanExercisesDTO;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanRequestDTO;
 import com.kuba.gymtrackerapi.user.User;
 import com.kuba.gymtrackerapi.workoutsession.WorkoutSession;
 import java.util.ArrayList;

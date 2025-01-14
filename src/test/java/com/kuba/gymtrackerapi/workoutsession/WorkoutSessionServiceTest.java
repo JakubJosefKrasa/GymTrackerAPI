@@ -15,7 +15,7 @@ import com.kuba.gymtrackerapi.exercise.dto.ExerciseSetDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlan;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlanService;
-import com.kuba.gymtrackerapi.trainingplan.TrainingPlanWorkoutSessionExercisesDTO;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanWorkoutSessionExercisesDTO;
 import com.kuba.gymtrackerapi.user.User;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExercise;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExerciseDTO;
