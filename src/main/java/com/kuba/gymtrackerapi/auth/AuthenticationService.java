@@ -1,5 +1,7 @@
 package com.kuba.gymtrackerapi.auth;
 
+import com.kuba.gymtrackerapi.auth.dto.LoginRequestDTO;
+import com.kuba.gymtrackerapi.auth.dto.RegisterRequestDTO;
 import com.kuba.gymtrackerapi.exceptions.AlreadyExistsException;
 import com.kuba.gymtrackerapi.exceptions.BadRequestException;
 import com.kuba.gymtrackerapi.exceptions.InvalidCredentialsException;

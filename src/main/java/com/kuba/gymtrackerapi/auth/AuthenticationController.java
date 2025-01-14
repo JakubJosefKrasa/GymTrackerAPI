@@ -1,5 +1,7 @@
 package com.kuba.gymtrackerapi.auth;
 
+import com.kuba.gymtrackerapi.auth.dto.LoginRequestDTO;
+import com.kuba.gymtrackerapi.auth.dto.RegisterRequestDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
