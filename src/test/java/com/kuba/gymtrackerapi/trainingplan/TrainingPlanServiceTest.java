@@ -18,6 +18,7 @@ import com.kuba.gymtrackerapi.exercise.dto.ExerciseDTO;
 import com.kuba.gymtrackerapi.exercise.ExerciseService;
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanDTO;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanExercisesDTO;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanRequestDTO;
 import com.kuba.gymtrackerapi.user.User;
@@ -55,17 +56,21 @@ class TrainingPlanServiceTest {
     private final Long pullTrainingPlanId = 2L;
     private TrainingPlan legsTrainingPlan;
     private TrainingPlan pullTrainingPlan;
-    private TrainingPlanExercisesDTO legsTrainingPlanDTO;
-    private TrainingPlanExercisesDTO pullTrainingPlanDTO;
+    private TrainingPlanExercisesDTO legsTrainingPlanExercisesDTO;
+    private TrainingPlanExercisesDTO pullTrainingPlanExercisesDTO;
+    private TrainingPlanDTO legsTrainingPlanDTO;
+    private TrainingPlanDTO pullTrainingPlanDTO;
 
     @BeforeEach
     void setUp() {
         user = new User();
         legsTrainingPlan = TrainingPlan.builder().id(legsTrainingPlanId).trainingPlanName("Legs").user(user).exercises(new ArrayList<>()).workoutSessions(new HashSet<>()).build();
-        legsTrainingPlanDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Legs", new ArrayList<>());
+        legsTrainingPlanExercisesDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Legs", new ArrayList<>());
+        legsTrainingPlanDTO = new TrainingPlanDTO(legsTrainingPlanId, "Legs");
 
         pullTrainingPlan = TrainingPlan.builder().id(pullTrainingPlanId).trainingPlanName("Pull").user(user).build();
-        pullTrainingPlanDTO = new TrainingPlanExercisesDTO(pullTrainingPlanId, "Pull", new ArrayList<>());
+        pullTrainingPlanExercisesDTO = new TrainingPlanExercisesDTO(pullTrainingPlanId, "Pull", new ArrayList<>());
+        pullTrainingPlanDTO = new TrainingPlanDTO(pullTrainingPlanId, "Pull");
     }
 
     @Test
@@ -96,9 +101,9 @@ class TrainingPlanServiceTest {
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanRepository.findByUser(page, user)).thenReturn(trainingPlansPage);
-        when(trainingPlanMapper.toTrainingPlanExercisesDTO(pullTrainingPlan)).thenReturn(pullTrainingPlanDTO);
+        when(trainingPlanMapper.toTrainingPlanDTO(pullTrainingPlan)).thenReturn(pullTrainingPlanDTO);
 
-        PaginationDTO<TrainingPlanExercisesDTO> foundTrainingPlans = trainingPlanService.getTrainingPlansByUser(1, 1);
+        PaginationDTO<TrainingPlanDTO> foundTrainingPlans = trainingPlanService.getTrainingPlansByUser(1, 1);
 
         assertNotNull(foundTrainingPlans);
         assertEquals(trainingPlans.size(), foundTrainingPlans.items().size());
@@ -106,7 +111,7 @@ class TrainingPlanServiceTest {
         assertEquals(pullTrainingPlanDTO.trainingPlanName(), foundTrainingPlans.items().get(0).trainingPlanName());
         verify(userContext, times(1)).getAuthenticatedUser();
         verify(trainingPlanRepository, times(1)).findByUser(page, user);
-        verify(trainingPlanMapper, times(1)).toTrainingPlanExercisesDTO(pullTrainingPlan);
+        verify(trainingPlanMapper, times(1)).toTrainingPlanDTO(pullTrainingPlan);
     }
 
     @Test
@@ -115,14 +120,17 @@ class TrainingPlanServiceTest {
         List<TrainingPlan> trainingPlans = List.of(legsTrainingPlan, pullTrainingPlan);
         PageImpl<TrainingPlan> trainingPlansPage = new PageImpl<>(trainingPlans, page, trainingPlans.size());
 
-        List<TrainingPlanExercisesDTO> trainingPlansDTO = List.of(legsTrainingPlanDTO, pullTrainingPlanDTO);
+        List<TrainingPlanDTO> trainingPlansDTO = List.of(
+                legsTrainingPlanDTO,
+                pullTrainingPlanDTO
+        );
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanRepository.findByUser(page, user)).thenReturn(trainingPlansPage);
-        when(trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlans.get(0))).thenReturn(trainingPlansDTO.get(0));
-        when(trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlans.get(1))).thenReturn(trainingPlansDTO.get(1));
+        when(trainingPlanMapper.toTrainingPlanDTO(trainingPlans.get(0))).thenReturn(trainingPlansDTO.get(0));
+        when(trainingPlanMapper.toTrainingPlanDTO(trainingPlans.get(1))).thenReturn(trainingPlansDTO.get(1));
 
-        PaginationDTO<TrainingPlanExercisesDTO> foundTrainingPlans = trainingPlanService.getTrainingPlansByUser(-1, 1);
+        PaginationDTO<TrainingPlanDTO> foundTrainingPlans = trainingPlanService.getTrainingPlansByUser(-1, 1);
 
         assertNotNull(foundTrainingPlans);
         assertEquals(trainingPlansDTO.size(), foundTrainingPlans.items().size());
@@ -132,22 +140,22 @@ class TrainingPlanServiceTest {
         assertEquals(trainingPlansDTO.get(1).trainingPlanName(), foundTrainingPlans.items().get(1).trainingPlanName());
         verify(userContext, times(1)).getAuthenticatedUser();
         verify(trainingPlanRepository, times(1)).findByUser(page, user);
-        verify(trainingPlanMapper, times(2)).toTrainingPlanExercisesDTO(any(TrainingPlan.class));
+        verify(trainingPlanMapper, times(2)).toTrainingPlanDTO(any(TrainingPlan.class));
     }
 
     @Test
     public void getTrainingPlanById_ShouldReturnTrainingPlan() {
         when(userContext.getAuthenticatedUser()).thenReturn(user);
-        when(trainingPlanRepository.findByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
-        when(trainingPlanMapper.toTrainingPlanExercisesDTO(legsTrainingPlan)).thenReturn(legsTrainingPlanDTO);
+        when(trainingPlanRepository.findWithExercisesByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
+        when(trainingPlanMapper.toTrainingPlanExercisesDTO(legsTrainingPlan)).thenReturn(legsTrainingPlanExercisesDTO);
 
         TrainingPlanExercisesDTO foundTrainingPlan = trainingPlanService.getTrainingPlanById(legsTrainingPlanId);
 
         assertNotNull(foundTrainingPlan);
-        assertEquals(legsTrainingPlanDTO.id(), foundTrainingPlan.id());
-        assertEquals(legsTrainingPlanDTO.trainingPlanName(), foundTrainingPlan.trainingPlanName());
+        assertEquals(legsTrainingPlanExercisesDTO.id(), foundTrainingPlan.id());
+        assertEquals(legsTrainingPlanExercisesDTO.trainingPlanName(), foundTrainingPlan.trainingPlanName());
         verify(userContext, times(1)).getAuthenticatedUser();
-        verify(trainingPlanRepository, times(1)).findByIdAndUser(legsTrainingPlanId, user);
+        verify(trainingPlanRepository, times(1)).findWithExercisesByIdAndUser(legsTrainingPlanId, user);
         verify(trainingPlanMapper, times(1)).toTrainingPlanExercisesDTO(legsTrainingPlan);
     }
 
@@ -157,16 +165,16 @@ class TrainingPlanServiceTest {
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanRepository.save(any(TrainingPlan.class))).thenReturn(legsTrainingPlan);
-        when(trainingPlanMapper.toTrainingPlanExercisesDTO(legsTrainingPlan)).thenReturn(legsTrainingPlanDTO);
+        when(trainingPlanMapper.toTrainingPlanDTO(legsTrainingPlan)).thenReturn(legsTrainingPlanDTO);
 
-        TrainingPlanExercisesDTO createdTrainingPlan = trainingPlanService.createTrainingPlan(trainingPlanRequest);
+        TrainingPlanDTO createdTrainingPlan = trainingPlanService.createTrainingPlan(trainingPlanRequest);
 
         assertNotNull(createdTrainingPlan);
         assertEquals(legsTrainingPlan.getId(), createdTrainingPlan.id());
         assertEquals(legsTrainingPlan.getTrainingPlanName(), createdTrainingPlan.trainingPlanName());
         verify(userContext, times(1)).getAuthenticatedUser();
         verify(trainingPlanRepository, times(1)).save(any(TrainingPlan.class));
-        verify(trainingPlanMapper, times(1)).toTrainingPlanExercisesDTO(legsTrainingPlan);
+        verify(trainingPlanMapper, times(1)).toTrainingPlanDTO(legsTrainingPlan);
     }
 
     @Test
@@ -186,20 +194,20 @@ class TrainingPlanServiceTest {
         TrainingPlanRequestDTO trainingPlanRequest = new TrainingPlanRequestDTO("Push");
 
         TrainingPlan updatedTrainingPlan = TrainingPlan.builder().id(legsTrainingPlanId).trainingPlanName("Push").user(user).build();
-        TrainingPlanExercisesDTO updatedTrainingPlanDTO = new TrainingPlanExercisesDTO(legsTrainingPlanId, "Push", new ArrayList<>(List.of()));
+        TrainingPlanDTO updatedTrainingPlanDTO = new TrainingPlanDTO(legsTrainingPlanId, "Push");
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanRepository.findByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
         when(trainingPlanRepository.save(legsTrainingPlan)).thenReturn(updatedTrainingPlan);
-        when(trainingPlanMapper.toTrainingPlanExercisesDTO(updatedTrainingPlan)).thenReturn(updatedTrainingPlanDTO);
+        when(trainingPlanMapper.toTrainingPlanDTO(updatedTrainingPlan)).thenReturn(updatedTrainingPlanDTO);
 
-        TrainingPlanExercisesDTO changedTrainingPlan = trainingPlanService.changeTrainingPlanName(legsTrainingPlanId, trainingPlanRequest);
+        TrainingPlanDTO changedTrainingPlan = trainingPlanService.changeTrainingPlanName(legsTrainingPlanId, trainingPlanRequest);
 
         assertEquals(trainingPlanRequest.trainingPlanName(), changedTrainingPlan.trainingPlanName());
         verify(userContext, times(1)).getAuthenticatedUser();
         verify(trainingPlanRepository, times(1)).findByIdAndUser(legsTrainingPlanId, user);
         verify(trainingPlanRepository, times(1)).save(legsTrainingPlan);
-        verify(trainingPlanMapper, times(1)).toTrainingPlanExercisesDTO(updatedTrainingPlan);
+        verify(trainingPlanMapper, times(1)).toTrainingPlanDTO(updatedTrainingPlan);
     }
 
     @Test
@@ -209,7 +217,7 @@ class TrainingPlanServiceTest {
         legsTrainingPlan.getExercises().add(exercise);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
-        when(trainingPlanRepository.findByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
+        when(trainingPlanRepository.findWithExercisesWorkoutSessionsByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
         when(exerciseService.getExerciseEntityById(exerciseId, user)).thenReturn(exercise);
 
         assertThrows(BadRequestException.class, () -> trainingPlanService.addExerciseInTrainingPlan(legsTrainingPlanId, exerciseId));
@@ -224,7 +232,7 @@ class TrainingPlanServiceTest {
         TrainingPlanExercisesDTO trainingPlanExercisesDTO = new TrainingPlanExercisesDTO(1L, "Legs", new ArrayList<>(List.of(new ExerciseDTO(legsTrainingPlanId, "Squat"))));
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
-        when(trainingPlanRepository.findByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
+        when(trainingPlanRepository.findWithExercisesWorkoutSessionsByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
         when(exerciseService.getExerciseEntityById(exerciseId, user)).thenReturn(exercise);
         when(trainingPlanRepository.save(legsTrainingPlan)).thenReturn(legsTrainingPlan);
         when(trainingPlanMapper.toTrainingPlanExercisesDTO(legsTrainingPlan)).thenReturn(trainingPlanExercisesDTO);
@@ -233,7 +241,7 @@ class TrainingPlanServiceTest {
 
         assertTrue(legsTrainingPlan.getExercises().contains(exercise));
         verify(userContext, times(1)).getAuthenticatedUser();
-        verify(trainingPlanRepository, times(1)).findByIdAndUser(legsTrainingPlanId, user);
+        verify(trainingPlanRepository, times(1)).findWithExercisesWorkoutSessionsByIdAndUser(legsTrainingPlanId, user);
         verify(exerciseService, times(1)).getExerciseEntityById(exerciseId, user);
         verify(trainingPlanRepository, times(1)).save(legsTrainingPlan);
         verify(trainingPlanMapper, times(1)).toTrainingPlanExercisesDTO(legsTrainingPlan);
@@ -246,7 +254,7 @@ class TrainingPlanServiceTest {
         legsTrainingPlan.getExercises().add(exercise);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
-        when(trainingPlanRepository.findByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
+        when(trainingPlanRepository.findWithExercisesByIdAndUser(legsTrainingPlanId, user)).thenReturn(Optional.of(legsTrainingPlan));
         when(exerciseService.getExerciseEntityById(exerciseId, user)).thenReturn(exercise);
         when(trainingPlanRepository.save(legsTrainingPlan)).thenReturn(legsTrainingPlan);
 
@@ -254,7 +262,7 @@ class TrainingPlanServiceTest {
 
         assertFalse(legsTrainingPlan.getExercises().contains(exercise));
         verify(userContext, times(1)).getAuthenticatedUser();
-        verify(trainingPlanRepository, times(1)).findByIdAndUser(legsTrainingPlanId, user);
+        verify(trainingPlanRepository, times(1)).findWithExercisesByIdAndUser(legsTrainingPlanId, user);
         verify(exerciseService, times(1)).getExerciseEntityById(exerciseId, user);
         verify(trainingPlanRepository, times(1)).save(legsTrainingPlan);
     }

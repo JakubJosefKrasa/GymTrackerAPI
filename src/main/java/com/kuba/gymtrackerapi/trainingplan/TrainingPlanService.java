@@ -6,6 +6,7 @@ import com.kuba.gymtrackerapi.exercise.Exercise;
 import com.kuba.gymtrackerapi.exercise.ExerciseService;
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanDTO;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanExercisesDTO;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanRequestDTO;
 import com.kuba.gymtrackerapi.user.User;
@@ -52,7 +53,43 @@ public class TrainingPlanService {
         });
     }
 
-    public PaginationDTO<TrainingPlanExercisesDTO> getTrainingPlansByUser(int pageNumber, int pageSize) {
+    public TrainingPlan getTrainingPlanEntityWithExercisesById(Long id, User user) {
+        log.info(
+                "[METHOD]: getTrainingPlanEntityWithExercisesById - Fetching trainingPlan with exercises by ID: {} and user_id: {}",
+                id,
+                user.getId()
+        );
+
+        return trainingPlanRepository.findWithExercisesByIdAndUser(id, user).orElseThrow(() -> {
+            log.warn(
+                    "[METHOD]: getTrainingPlanEntityWithExercisesById - trainingPlan with exercises was not found by ID: {} and user_id: {}",
+                    id,
+                    user.getId()
+            );
+
+            return new NotFoundException("Tréninkový plán nenalezen!");
+        });
+    }
+
+    public TrainingPlan getTrainingPlanEntityWithExercisesWorkoutSessionsById(Long id, User user) {
+        log.info(
+                "[METHOD]: getTrainingPlanEntityWithExercisesWorkoutSessionsById - Fetching trainingPlan with exercises and workoutSessions by ID: {} and user_id: {}",
+                id,
+                user.getId()
+        );
+
+        return trainingPlanRepository.findWithExercisesWorkoutSessionsByIdAndUser(id, user).orElseThrow(() -> {
+            log.warn(
+                    "[METHOD]: getTrainingPlanEntityWithExercisesWorkoutSessionsById - trainingPlan with exercises and workoutSessions was not found by ID: {} and user_id: {}",
+                    id,
+                    user.getId()
+            );
+
+            return new NotFoundException("Tréninkový plán nenalezen!");
+        });
+    }
+
+    public PaginationDTO<TrainingPlanDTO> getTrainingPlansByUser(int pageNumber, int pageSize) {
         User user = userContext.getAuthenticatedUser();
 
         log.info(
@@ -66,10 +103,10 @@ public class TrainingPlanService {
 
         Page<TrainingPlan> trainingPlanPage = trainingPlanRepository.findByUser(page, user);
 
-        List<TrainingPlanExercisesDTO> trainingPlans = trainingPlanPage.getContent()
-                                                                       .stream()
-                                                                       .map(trainingPlanMapper::toTrainingPlanExercisesDTO)
-                                                                       .toList();
+        List<TrainingPlanDTO> trainingPlans = trainingPlanPage.getContent()
+                                                              .stream()
+                                                              .map(trainingPlanMapper::toTrainingPlanDTO)
+                                                              .toList();
 
         return new PaginationDTO<>(trainingPlans,
                                    trainingPlanPage.getTotalElements(),
@@ -83,13 +120,13 @@ public class TrainingPlanService {
 
         log.info("[METHOD]: getTrainingPlanById - Fetching trainingPlan by ID: {} for user_id: {}", id, user.getId());
 
-        TrainingPlan trainingPlan = getTrainingPlanEntityById(id, user);
+        TrainingPlan trainingPlan = getTrainingPlanEntityWithExercisesById(id, user);
 
         return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
     }
 
     @Transactional
-    public TrainingPlanExercisesDTO createTrainingPlan(TrainingPlanRequestDTO trainingPlanRequest) {
+    public TrainingPlanDTO createTrainingPlan(TrainingPlanRequestDTO trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
 
         log.info(
@@ -111,7 +148,7 @@ public class TrainingPlanService {
                 trainingPlanToBeSaved.getId()
         );
 
-        return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlanToBeSaved);
+        return trainingPlanMapper.toTrainingPlanDTO(trainingPlanToBeSaved);
     }
 
     @Transactional
@@ -132,7 +169,7 @@ public class TrainingPlanService {
     }
 
     @Transactional
-    public TrainingPlanExercisesDTO changeTrainingPlanName(Long id, TrainingPlanRequestDTO trainingPlanRequest) {
+    public TrainingPlanDTO changeTrainingPlanName(Long id, TrainingPlanRequestDTO trainingPlanRequest) {
         User user = userContext.getAuthenticatedUser();
 
         log.info(
@@ -154,7 +191,7 @@ public class TrainingPlanService {
                 trainingPlan.getTrainingPlanName()
         );
 
-        return trainingPlanMapper.toTrainingPlanExercisesDTO(trainingPlan);
+        return trainingPlanMapper.toTrainingPlanDTO(trainingPlan);
     }
 
     @Transactional
@@ -168,7 +205,7 @@ public class TrainingPlanService {
                 user.getId()
         );
 
-        TrainingPlan trainingPlan = getTrainingPlanEntityById(trainingPlanId, user);
+        TrainingPlan trainingPlan = getTrainingPlanEntityWithExercisesWorkoutSessionsById(trainingPlanId, user);
         Exercise exercise = exerciseService.getExerciseEntityById(exerciseId, user);
 
         if (trainingPlan.getExercises().contains(exercise)) {
@@ -215,7 +252,7 @@ public class TrainingPlanService {
                 user.getId()
         );
 
-        TrainingPlan trainingPlan = getTrainingPlanEntityById(trainingPlanId, user);
+        TrainingPlan trainingPlan = getTrainingPlanEntityWithExercisesById(trainingPlanId, user);
         Exercise exercise = exerciseService.getExerciseEntityById(exerciseId, user);
 
         trainingPlan.getExercises().remove(exercise);

@@ -1,6 +1,7 @@
 package com.kuba.gymtrackerapi.trainingplan;
 
 import com.kuba.gymtrackerapi.pagination.PaginationDTO;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanDTO;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanExercisesDTO;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanRequestDTO;
 import jakarta.validation.Valid;
@@ -26,11 +27,11 @@ public class TrainingPlanController {
     private final TrainingPlanService trainingPlanService;
 
     @GetMapping
-    public ResponseEntity<PaginationDTO<TrainingPlanExercisesDTO>> getTrainingPlansByUser(
+    public ResponseEntity<PaginationDTO<TrainingPlanDTO>> getTrainingPlansByUser(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "5") int pageSize
     ) {
-        PaginationDTO<TrainingPlanExercisesDTO> trainingPlansByUser = trainingPlanService.getTrainingPlansByUser(
+        PaginationDTO<TrainingPlanDTO> trainingPlansByUser = trainingPlanService.getTrainingPlansByUser(
                 pageNumber,
                 pageSize
         );
@@ -46,10 +47,10 @@ public class TrainingPlanController {
     }
 
     @PostMapping
-    public ResponseEntity<TrainingPlanExercisesDTO> createTrainingPlan(
+    public ResponseEntity<TrainingPlanDTO> createTrainingPlan(
             @Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest
     ) {
-        TrainingPlanExercisesDTO trainingPlan = trainingPlanService.createTrainingPlan(trainingPlanRequest);
+        TrainingPlanDTO trainingPlan = trainingPlanService.createTrainingPlan(trainingPlanRequest);
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.CREATED);
     }
@@ -62,11 +63,11 @@ public class TrainingPlanController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TrainingPlanExercisesDTO> changeTrainingPlanName(
+    public ResponseEntity<TrainingPlanDTO> changeTrainingPlanName(
             @PathVariable Long id,
             @Valid @RequestBody TrainingPlanRequestDTO trainingPlanRequest
     ) {
-        TrainingPlanExercisesDTO trainingPlan = trainingPlanService.changeTrainingPlanName(id, trainingPlanRequest);
+        TrainingPlanDTO trainingPlan = trainingPlanService.changeTrainingPlanName(id, trainingPlanRequest);
 
         return new ResponseEntity<>(trainingPlan, HttpStatus.OK);
     }

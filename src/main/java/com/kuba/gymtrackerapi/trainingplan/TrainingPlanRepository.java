@@ -9,9 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TrainingPlanRepository extends JpaRepository<TrainingPlan, Long> {
 
-    @EntityGraph(attributePaths = "exercises")
     Page<TrainingPlan> findByUser(Pageable pageable, User user);
 
-    @EntityGraph(attributePaths = { "exercises", "workoutSessions"})
     Optional<TrainingPlan> findByIdAndUser(Long id, User user);
+
+    @EntityGraph(attributePaths = { "exercises" })
+    Optional<TrainingPlan> findWithExercisesByIdAndUser(Long id, User user);
+
+    @EntityGraph(attributePaths = { "exercises", "workoutSessions" })
+    Optional<TrainingPlan> findWithExercisesWorkoutSessionsByIdAndUser(Long id, User user);
 }
