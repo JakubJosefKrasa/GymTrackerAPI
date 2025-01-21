@@ -511,7 +511,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/WorkoutSessionDTO'
+                  $ref: '#/components/schemas/WorkoutSessionExercisesDTO'
         "401":
           description: UNAUTHORIZED
     post:
@@ -532,7 +532,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkoutSessionDTO'
+                $ref: '#/components/schemas/WorkoutSessionExercisesDTO'
         "400":
           description: BAD REQUEST
           content:
@@ -567,7 +567,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/WorkoutSessionDTO'
+                $ref: '#/components/schemas/WorkoutSessionExercisesDTO'
         "401":
           description: UNAUTHORIZED
         "404":
@@ -636,7 +636,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/WorkoutSessionDTO'
+                $ref: '#/components/schemas/WorkoutSessionExercisesDTO'
         "400":
           description: BAD REQUEST
           content:
@@ -683,7 +683,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/WorkoutSessionDTO'
+                $ref: '#/components/schemas/WorkoutSessionExercisesDTO'
         "401":
           description: UNAUTHORIZED
         "404":
@@ -729,7 +729,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkoutSessionDTO'
+                $ref: '#/components/schemas/WorkoutSessionExercisesDTO'
         "400":
           description: BAD REQUEST
           content:

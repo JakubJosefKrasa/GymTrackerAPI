@@ -8,14 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, Long> {
 
-    @EntityGraph(
-            attributePaths = {
-                    "trainingPlan",
-                    "workoutSessionExercises",
-                    "workoutSessionExercises.exercise",
-                    "workoutSessionExercises.workoutSessionExerciseSets"}
-    )
+    @EntityGraph(attributePaths = "trainingPlan")
     List<WorkoutSession> findByUser(User user);
+
+    Optional<WorkoutSession> findByIdAndUser(Long id, User user);
 
     @EntityGraph(
             attributePaths = {
@@ -25,5 +21,5 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
                     "workoutSessionExercises.workoutSessionExerciseSets"
             }
     )
-    Optional<WorkoutSession> findByIdAndUser(Long id, User user);
+    Optional<WorkoutSession> findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(Long id, User user);
 }

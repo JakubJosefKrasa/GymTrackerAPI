@@ -7,6 +7,7 @@ import com.kuba.gymtrackerapi.trainingplan.TrainingPlan;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlanService;
 import com.kuba.gymtrackerapi.user.User;
 import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionDTO;
+import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionExercisesDTO;
 import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExercise;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExerciseService;
@@ -36,7 +37,7 @@ public class WorkoutSessionService {
     private final WorkoutSessionExerciseSetService workoutSessionExerciseSetService;
 
     private final WorkoutSessionMapper workoutSessionMapper;
-    
+
     public WorkoutSession getWorkoutSessionEntityById(Long workoutSessionId, User user) {
         log.info(
                 "[METHOD]: getWorkoutSessionEntityById - Fetching workoutSession by ID: {} and user_id: {}",
@@ -48,6 +49,25 @@ public class WorkoutSessionService {
                                                                 .orElseThrow(() -> {
                                                                     log.warn(
                                                                             "[METHOD]: getWorkoutSessionEntityById - workoutSession was not found by ID: {} and user_id: {}",
+                                                                            workoutSessionId,
+                                                                            user.getId()
+                                                                    );
+
+                                                                    return new NotFoundException("Trénink nenalezen!");
+                                                                });
+    }
+    
+    public WorkoutSession getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById(Long workoutSessionId, User user) {
+        log.info(
+                "[METHOD]: getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById - Fetching workoutSession by ID: {} and user_id: {}",
+                workoutSessionId,
+                user.getId()
+        );
+
+        return workoutSessionRepository.findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user)
+                                                                .orElseThrow(() -> {
+                                                                    log.warn(
+                                                                            "[METHOD]: getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById - workoutSession was not found by ID: {} and user_id: {}",
                                                                             workoutSessionId,
                                                                             user.getId()
                                                                     );
@@ -69,7 +89,7 @@ public class WorkoutSessionService {
                 .toList();
     }
 
-    public WorkoutSessionDTO getWorkoutSessionById(Long id) {
+    public WorkoutSessionExercisesDTO getWorkoutSessionById(Long id) {
         User user = userContext.getAuthenticatedUser();
 
         log.info(
@@ -78,13 +98,13 @@ public class WorkoutSessionService {
                 user.getId()
         );
 
-        WorkoutSession workoutSession = getWorkoutSessionEntityById(id, user);
+        WorkoutSession workoutSession = getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById(id, user);
 
-        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionExercisesDTO(workoutSession);
     }
 
     @Transactional
-    public WorkoutSessionDTO createWorkoutSession(WorkoutSessionRequestDTO workoutSessionRequest) {
+    public WorkoutSessionExercisesDTO createWorkoutSession(WorkoutSessionRequestDTO workoutSessionRequest) {
         User user = userContext.getAuthenticatedUser();
 
         log.info(
@@ -125,7 +145,7 @@ public class WorkoutSessionService {
 
         log.info("[METHOD]: createWorkoutSession - workoutSession created with ID: {}", workoutSession.getId());
 
-        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionExercisesDTO(workoutSession);
     }
 
     @Transactional
@@ -146,7 +166,7 @@ public class WorkoutSessionService {
     }
 
     @Transactional
-    public WorkoutSessionDTO createExerciseSet(
+    public WorkoutSessionExercisesDTO createExerciseSet(
             Long workoutSessionId,
             Long workoutSessionExerciseId,
             WorkoutSessionExerciseSetRequestDTO workoutSessionExerciseSetRequest
@@ -160,7 +180,7 @@ public class WorkoutSessionService {
                 workoutSessionExerciseSetRequest
         );
 
-        WorkoutSession workoutSession = getWorkoutSessionEntityById(workoutSessionId, user);
+        WorkoutSession workoutSession = getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById(workoutSessionId, user);
 
         List<WorkoutSessionExercise> workoutSessionExercises = workoutSession.getWorkoutSessionExercises()
                                                                              .stream()
@@ -192,7 +212,7 @@ public class WorkoutSessionService {
 
         workoutSession = workoutSessionRepository.save(workoutSession);
 
-        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionExercisesDTO(workoutSession);
     }
 
     @Transactional
@@ -221,7 +241,7 @@ public class WorkoutSessionService {
     }
 
     @Transactional
-    public WorkoutSessionDTO editExerciseSet(
+    public WorkoutSessionExercisesDTO editExerciseSet(
             Long workoutSessionId,
             Long workoutSessionExerciseId,
             Long workoutSessionExerciseSetId,
@@ -254,6 +274,6 @@ public class WorkoutSessionService {
 
         workoutSessionExerciseSetService.saveWorkoutSessionExerciseSet(exerciseSet);
 
-        return workoutSessionMapper.toWorkoutSessionDTO(workoutSession);
+        return workoutSessionMapper.toWorkoutSessionExercisesDTO(workoutSession);
     }
 }

@@ -1,6 +1,7 @@
 package com.kuba.gymtrackerapi.workoutsession;
 
 import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionDTO;
+import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionExercisesDTO;
 import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexerciseset.dto.WorkoutSessionExerciseSetRequestDTO;
 import jakarta.validation.Valid;
@@ -32,17 +33,17 @@ public class WorkoutSessionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WorkoutSessionDTO> getWorkoutSessionById(@PathVariable Long id) {
-        WorkoutSessionDTO workoutSession = workoutSessionService.getWorkoutSessionById(id);
+    public ResponseEntity<WorkoutSessionExercisesDTO> getWorkoutSessionById(@PathVariable Long id) {
+        WorkoutSessionExercisesDTO workoutSession = workoutSessionService.getWorkoutSessionById(id);
 
         return new ResponseEntity<>(workoutSession, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<WorkoutSessionDTO> createWorkoutSession(
+    public ResponseEntity<WorkoutSessionExercisesDTO> createWorkoutSession(
             @Valid @RequestBody WorkoutSessionRequestDTO workoutSessionRequest
     ) {
-        WorkoutSessionDTO workoutSession = workoutSessionService.createWorkoutSession(workoutSessionRequest);
+        WorkoutSessionExercisesDTO workoutSession = workoutSessionService.createWorkoutSession(workoutSessionRequest);
 
         return new ResponseEntity<>(workoutSession, HttpStatus.CREATED);
     }
@@ -55,21 +56,21 @@ public class WorkoutSessionController {
     }
 
     @PostMapping("/{workoutSessionId}/workout-session-exercises/{workoutSessionExerciseId}/workout-session-exercise-sets")
-    public ResponseEntity<WorkoutSessionDTO> createExerciseSet(
+    public ResponseEntity<WorkoutSessionExercisesDTO> createExerciseSet(
             @PathVariable Long workoutSessionId,
             @PathVariable Long workoutSessionExerciseId,
             @Valid @RequestBody WorkoutSessionExerciseSetRequestDTO workoutSessionExerciseSetRequest
     ) {
-        WorkoutSessionDTO workoutSession = workoutSessionService.createExerciseSet(workoutSessionId,
-                                                                                   workoutSessionExerciseId,
-                                                                                   workoutSessionExerciseSetRequest
+        WorkoutSessionExercisesDTO workoutSession = workoutSessionService.createExerciseSet(workoutSessionId,
+                                                                                            workoutSessionExerciseId,
+                                                                                            workoutSessionExerciseSetRequest
         );
 
         return new ResponseEntity<>(workoutSession, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{workoutSessionId}/workout-session-exercises/{workoutSessionExerciseId}/workout-session-exercise-sets/{workoutSessionExerciseSetId}")
-    public ResponseEntity<WorkoutSessionDTO> deleteExerciseSetById(
+    public ResponseEntity<WorkoutSessionExercisesDTO> deleteExerciseSetById(
             @PathVariable Long workoutSessionId,
             @PathVariable Long workoutSessionExerciseId,
             @PathVariable Long workoutSessionExerciseSetId
@@ -83,16 +84,16 @@ public class WorkoutSessionController {
     }
 
     @PatchMapping("/{workoutSessionId}/workout-session-exercises/{workoutSessionExerciseId}/workout-session-exercise-sets/{workoutSessionExerciseSetId}")
-    public ResponseEntity<WorkoutSessionDTO> editExerciseSet(
+    public ResponseEntity<WorkoutSessionExercisesDTO> editExerciseSet(
             @PathVariable Long workoutSessionId,
             @PathVariable Long workoutSessionExerciseId,
             @PathVariable Long workoutSessionExerciseSetId,
             @Valid @RequestBody WorkoutSessionExerciseSetRequestDTO workoutSessionExerciseSetRequest
     ) {
-        WorkoutSessionDTO workoutSession = workoutSessionService.editExerciseSet(workoutSessionId,
-                                                                                 workoutSessionExerciseId,
-                                                                                 workoutSessionExerciseSetId,
-                                                                                 workoutSessionExerciseSetRequest
+        WorkoutSessionExercisesDTO workoutSession = workoutSessionService.editExerciseSet(workoutSessionId,
+                                                                                          workoutSessionExerciseId,
+                                                                                          workoutSessionExerciseSetId,
+                                                                                          workoutSessionExerciseSetRequest
         );
 
         return new ResponseEntity<>(workoutSession, HttpStatus.OK);
