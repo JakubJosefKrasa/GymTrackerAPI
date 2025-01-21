@@ -15,9 +15,11 @@ import com.kuba.gymtrackerapi.exercise.dto.ExerciseSetDTO;
 import com.kuba.gymtrackerapi.security.UserContext;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlan;
 import com.kuba.gymtrackerapi.trainingplan.TrainingPlanService;
+import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanDTO;
 import com.kuba.gymtrackerapi.trainingplan.dto.TrainingPlanWorkoutSessionExercisesDTO;
 import com.kuba.gymtrackerapi.user.User;
 import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionDTO;
+import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionExercisesDTO;
 import com.kuba.gymtrackerapi.workoutsession.dto.WorkoutSessionRequestDTO;
 import com.kuba.gymtrackerapi.workoutsessionexercise.WorkoutSessionExercise;
 import com.kuba.gymtrackerapi.workoutsessionexercise.dto.WorkoutSessionExerciseDTO;
@@ -67,6 +69,7 @@ class WorkoutSessionServiceTest {
     private final Long workoutSessionId = 1L;
     private WorkoutSessionExerciseSet squatSet;
     private WorkoutSession workoutSession;
+    private WorkoutSessionExercisesDTO workoutSessionExercisesDTO;
     private WorkoutSessionDTO workoutSessionDTO;
 
     @BeforeEach
@@ -77,34 +80,36 @@ class WorkoutSessionServiceTest {
         WorkoutSessionExerciseDTO squatWorkoutSessionExerciseDTO = new WorkoutSessionExerciseDTO(squatWorkoutSessionExerciseId, squatExerciseSetDTO);
         TrainingPlanWorkoutSessionExercisesDTO legsTrainingPlanWorkoutSessionDTO = new TrainingPlanWorkoutSessionExercisesDTO(trainingPlanId, "Legs", new HashSet<>(Set.of(squatWorkoutSessionExerciseDTO)));
         WorkoutSessionExercise squatWorkoutSessionExercise = WorkoutSessionExercise.builder().id(squatExerciseId).workoutSessionExerciseSets(new HashSet<>()).build();
+        TrainingPlanDTO trainingPlanDTO = new TrainingPlanDTO(trainingPlanId, "Legs");
 
         user = new User();
         workoutSession = WorkoutSession.builder().id(workoutSessionId).date(LocalDate.now()).user(user).workoutSessionExercises(new HashSet<>(Set.of(squatWorkoutSessionExercise))).build();
-        workoutSessionDTO = new WorkoutSessionDTO(
+        workoutSessionExercisesDTO = new WorkoutSessionExercisesDTO(
                 workoutSessionId,
                 LocalDate.now(),
                 legsTrainingPlanWorkoutSessionDTO
         );
+        workoutSessionDTO = new WorkoutSessionDTO(workoutSessionId, LocalDate.now(), trainingPlanDTO);
     }
 
     @Test
-    public void getWorkoutSessionEntityById_ShouldReturnWorkoutSession() {
-        when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
+    public void getWorkoutSessionEntityById_ShouldReturnWorkoutSessionWithTrainingPlanWorkoutSessionExercises() {
+        when(workoutSessionRepository.findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
 
-        WorkoutSession foundWorkoutSession = workoutSessionService.getWorkoutSessionEntityById(workoutSessionId, user);
+        WorkoutSession foundWorkoutSession = workoutSessionService.getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById(workoutSessionId, user);
 
         assertNotNull(foundWorkoutSession);
         assertEquals(workoutSession.getId(), foundWorkoutSession.getId());
         assertEquals(workoutSession.getDate(), foundWorkoutSession.getDate());
-        verify(workoutSessionRepository, times(1)).findByIdAndUser(workoutSessionId, user);
+        verify(workoutSessionRepository, times(1)).findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user);
     }
 
     @Test
-    public void getWorkoutSessionEntityById_ShouldThrowNotFoundException() {
-        when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.empty());
+    public void getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById_ShouldThrowNotFoundException() {
+        when(workoutSessionRepository.findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> workoutSessionService.getWorkoutSessionEntityById(workoutSessionId, user));
-        verify(workoutSessionRepository, times(1)).findByIdAndUser(workoutSessionId, user);
+        assertThrows(NotFoundException.class, () -> workoutSessionService.getWorkoutSessionEntityWithTrainingPlanWorkoutSessionExercisesById(workoutSessionId, user));
+        verify(workoutSessionRepository, times(1)).findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user);
     }
 
     @Test
@@ -129,18 +134,18 @@ class WorkoutSessionServiceTest {
     @Test
     public void getWorkoutSessionById_ShouldReturnWorkoutSession() {
         when(userContext.getAuthenticatedUser()).thenReturn(user);
-        when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
-        when(workoutSessionMapper.toWorkoutSessionDTO(workoutSession)).thenReturn(workoutSessionDTO);
+        when(workoutSessionRepository.findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
+        when(workoutSessionMapper.toWorkoutSessionExercisesDTO(workoutSession)).thenReturn(workoutSessionExercisesDTO);
 
-        WorkoutSessionDTO foundWorkoutSession = workoutSessionService.getWorkoutSessionById(workoutSessionId);
+        WorkoutSessionExercisesDTO foundWorkoutSession = workoutSessionService.getWorkoutSessionById(workoutSessionId);
 
         assertNotNull(foundWorkoutSession);
         assertEquals(workoutSession.getId(), foundWorkoutSession.id());
         assertEquals(workoutSession.getDate(), foundWorkoutSession.date());
 
         verify(userContext, times(1)).getAuthenticatedUser();
-        verify(workoutSessionRepository, times(1)).findByIdAndUser(workoutSessionId, user);
-        verify(workoutSessionMapper, times(1)).toWorkoutSessionDTO(workoutSession);
+        verify(workoutSessionRepository, times(1)).findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user);
+        verify(workoutSessionMapper, times(1)).toWorkoutSessionExercisesDTO(workoutSession);
     }
 
     @Test
@@ -162,23 +167,24 @@ class WorkoutSessionServiceTest {
                 new WorkoutSessionExerciseDTO(pulloverId, new ExerciseSetDTO(2L, "Pullover", new HashSet<>()))
         );
         TrainingPlanWorkoutSessionExercisesDTO tpwseDTO = new TrainingPlanWorkoutSessionExercisesDTO(pullTrainingPlanId, "Pull", wseDTO);
-        WorkoutSessionDTO expectedCreatedWorkoutSessionDTO = new WorkoutSessionDTO(workoutSessionId, LocalDate.now(), tpwseDTO);
+        WorkoutSessionExercisesDTO expectedCreatedWorkoutSessionExercisesDTO = new WorkoutSessionExercisesDTO(workoutSessionId, LocalDate.now(), tpwseDTO);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
         when(trainingPlanService.getTrainingPlanEntityById(pullTrainingPlanId, user)).thenReturn(pullTrainingPlan);
         when(workoutSessionRepository.save(any(WorkoutSession.class))).thenReturn(workoutSession);
-        when(workoutSessionMapper.toWorkoutSessionDTO(any(WorkoutSession.class))).thenReturn(expectedCreatedWorkoutSessionDTO);
+        when(workoutSessionMapper.toWorkoutSessionExercisesDTO(any(WorkoutSession.class))).thenReturn(
+                expectedCreatedWorkoutSessionExercisesDTO);
 
-        WorkoutSessionDTO createdWorkoutSessionDTO = workoutSessionService.createWorkoutSession(workoutSessionRequest);
+        WorkoutSessionExercisesDTO createdWorkoutSessionExercisesDTO = workoutSessionService.createWorkoutSession(workoutSessionRequest);
 
-        assertNotNull(createdWorkoutSessionDTO);
-        assertEquals(expectedCreatedWorkoutSessionDTO.id(), createdWorkoutSessionDTO.id());
-        assertEquals(expectedCreatedWorkoutSessionDTO.date(), createdWorkoutSessionDTO.date());
-        assertEquals(expectedCreatedWorkoutSessionDTO.trainingPlan().workoutSessionExercises().size(), createdWorkoutSessionDTO.trainingPlan().workoutSessionExercises().size());
+        assertNotNull(createdWorkoutSessionExercisesDTO);
+        assertEquals(expectedCreatedWorkoutSessionExercisesDTO.id(), createdWorkoutSessionExercisesDTO.id());
+        assertEquals(expectedCreatedWorkoutSessionExercisesDTO.date(), createdWorkoutSessionExercisesDTO.date());
+        assertEquals(expectedCreatedWorkoutSessionExercisesDTO.trainingPlan().workoutSessionExercises().size(), createdWorkoutSessionExercisesDTO.trainingPlan().workoutSessionExercises().size());
         verify(userContext, times(1)).getAuthenticatedUser();
         verify(trainingPlanService, times(1)).getTrainingPlanEntityById(pullTrainingPlanId, user);
         verify(workoutSessionRepository, times(1)).save(any(WorkoutSession.class));
-        verify(workoutSessionMapper, times(1)).toWorkoutSessionDTO(any(WorkoutSession.class));
+        verify(workoutSessionMapper, times(1)).toWorkoutSessionExercisesDTO(any(WorkoutSession.class));
     }
 
     @Test
@@ -199,11 +205,11 @@ class WorkoutSessionServiceTest {
         WorkoutSessionExerciseSetRequestDTO createRequest = new WorkoutSessionExerciseSetRequestDTO(8, 110);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
-        when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
+        when(workoutSessionRepository.findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
 
         assertThrows(NotFoundException.class, () -> workoutSessionService.createExerciseSet(workoutSessionId, 5L, createRequest));
         verify(userContext, times(1)).getAuthenticatedUser();
-        verify(workoutSessionRepository, times(1)).findByIdAndUser(workoutSessionId, user);
+        verify(workoutSessionRepository, times(1)).findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user);
     }
 
     @Test
@@ -211,17 +217,17 @@ class WorkoutSessionServiceTest {
         WorkoutSessionExerciseSetRequestDTO createRequest = new WorkoutSessionExerciseSetRequestDTO(8, 110);
 
         when(userContext.getAuthenticatedUser()).thenReturn(user);
-        when(workoutSessionRepository.findByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
+        when(workoutSessionRepository.findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user)).thenReturn(Optional.of(workoutSession));
         when(workoutSessionRepository.save(workoutSession)).thenReturn(workoutSession);
-        when(workoutSessionMapper.toWorkoutSessionDTO(workoutSession)).thenReturn(workoutSessionDTO);
+        when(workoutSessionMapper.toWorkoutSessionExercisesDTO(workoutSession)).thenReturn(workoutSessionExercisesDTO);
 
-        WorkoutSessionDTO updatedWorkoutSession = workoutSessionService.createExerciseSet(workoutSessionId, squatWorkoutSessionExerciseId, createRequest);
+        WorkoutSessionExercisesDTO updatedWorkoutSession = workoutSessionService.createExerciseSet(workoutSessionId, squatWorkoutSessionExerciseId, createRequest);
 
         assertNotNull(updatedWorkoutSession);
         verify(userContext, times(1)).getAuthenticatedUser();
-        verify(workoutSessionRepository, times(1)).findByIdAndUser(workoutSessionId, user);
+        verify(workoutSessionRepository, times(1)).findWithTrainingPlanWorkoutSessionExercisesByIdAndUser(workoutSessionId, user);
         verify(workoutSessionRepository, times(1)).save(workoutSession);
-        verify(workoutSessionMapper, times(1)).toWorkoutSessionDTO(workoutSession);
+        verify(workoutSessionMapper, times(1)).toWorkoutSessionExercisesDTO(workoutSession);
     }
 
     @Test
@@ -253,7 +259,7 @@ class WorkoutSessionServiceTest {
         when(workoutSessionExerciseService.getWorkoutSessionExerciseEntityByIdAndWorkoutSession(workoutSessionId, workoutSession)).thenReturn(null);
         when(workoutSessionExerciseSetService.getWorkoutSessionExerciseSetEntityById(squatWorkoutSessionExerciseId)).thenReturn(squatSet);
         when(workoutSessionExerciseSetService.saveWorkoutSessionExerciseSet(squatSet)).thenReturn(null);
-        when(workoutSessionMapper.toWorkoutSessionDTO(workoutSession)).thenReturn(workoutSessionDTO);
+        when(workoutSessionMapper.toWorkoutSessionExercisesDTO(workoutSession)).thenReturn(workoutSessionExercisesDTO);
 
         workoutSessionService.editExerciseSet(workoutSessionId, squatWorkoutSessionExerciseId, squatSetId, editRequest);
 
@@ -264,6 +270,6 @@ class WorkoutSessionServiceTest {
         verify(workoutSessionExerciseService, times(1)).getWorkoutSessionExerciseEntityByIdAndWorkoutSession(workoutSessionId, workoutSession);
         verify(workoutSessionExerciseSetService, times(1)).getWorkoutSessionExerciseSetEntityById(squatWorkoutSessionExerciseId);
         verify(workoutSessionExerciseSetService, times(1)).saveWorkoutSessionExerciseSet(squatSet);
-        verify(workoutSessionMapper, times(1)).toWorkoutSessionDTO(workoutSession);
+        verify(workoutSessionMapper, times(1)).toWorkoutSessionExercisesDTO(workoutSession);
     }
 }
