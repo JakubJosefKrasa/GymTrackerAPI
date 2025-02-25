@@ -8,6 +8,6 @@ FROM eclipse-temurin:17-jdk-jammy
 COPY --from=build /app/target/*.jar ./app.jar
 
 COPY src/main/java/com/kuba/GymTrackerAPI/lombok.config /lombok.config
-COPY docker-application.yml /docker-application.yml
+COPY docker-application.properties /docker-application.yml
 
 CMD ["java", "-jar", "-Dspring.config.location=/docker-application.yml", "app.jar"]
