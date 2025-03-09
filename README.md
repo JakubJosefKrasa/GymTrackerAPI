@@ -1,7 +1,7 @@
 # GymTracker
 
 GymTracker is a Spring Boot application designed to help users track their workout sessions. It allows users to manage exercises, create training plans, and log their workout progress effectively.
-For the backend was also created frontend application written in react that can be found here [GymTrackerClient](https://github.com/JakubJosefKrasa/GymTrackerClient)
+For the backend was also created frontend application written in react that can be found here [GymTrackerClient](https://github.com/JakubJosefKrasa/GymTrackerClient and Running Frontentend connected to backend [here](http://localhost:5173/)
 
 ---
 
